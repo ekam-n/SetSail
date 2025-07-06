@@ -40,5 +40,3 @@ double calculateAverage(
     int b    // [in] second integer input
 );
 */
-
-
