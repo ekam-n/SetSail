@@ -1,10 +1,41 @@
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+//*******************************
+// main.cpp
+// Description:
+// This module serves as the entry point for the ferry reservation system.
+// It handles the main menu and orchestrates the startup/shutdown of the system.
+//
+// Revision History:
+// Rev. 1 - 2025/07/06 - Team 12
+// - Created initial version
+//*******************************
+#include <iostream>
+#include <string>
+#include <limits>
+#include "main.h"
+#include "vehicle.h"
+#include "reservation.h"
+#include "vessel.h"
+#include "sailing.h"
+#include "UI.h"
+
+int main() {
+  if (!startup()) {
+    cerr << "System failed to start up.\n";
+  } 
+  renUI(); 
+  shutdown();
+  return 0;
+}
+
 /* CODING CONVENTIONS
 - Each file should begin with a comment stating the module name and a description 
   of the module's purpose.
 - Followed by a version history, listing the most recent changes first.
-- Before each function, a dividing line will be inserted, as follows
-//--------------------------------------------------------
+- This section will be encased in a set of line segments, as follows:
+//*******************************
+- Before each function, a dividing line will be inserted, as follows:
+//------
 - Following the line, each function will contain a comment explaining what it does, 
   the return values, and any constraints (pre or post conditions)
 - Function prototypes will have one parameter per line and comments to right.
@@ -18,25 +49,25 @@
 */
 
 /* The above conventions are used in an example:
-mathOps.h
+//*******************************
+// mathOps.h
+// Description:
+// This module provides a functions for basic the mathematical
+// operations. 
+//
+// Revision History:
+// Rev. 1 - 2025/07/05 - Team 12
+//     - Created initial version with calculateAverage function.
+//*******************************
 
-Description:
-This module provides a functions for basic the mathematical
-operations. 
-
-Revision History:
-Rev. 1 - 2025/07/05 - Yasna J
-    - Created initial version with calculateAverage function.
-
-//--------------------------------------------------------
-
-Description:
-Calculates the average of two integers. Returns value as a double.
-Precondition:
-Both integers must be within the valid range of `int`.
-
+//------
+// Description:
+// Calculates the average of two integers. Returns value as a double.
+// Precondition:
+// Both integers must be within the valid range of `int`.
 double calculateAverage(
     int a,   // [in] first integer input
     int b    // [in] second integer input
 );
 */
+.
