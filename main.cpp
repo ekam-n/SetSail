@@ -3,27 +3,25 @@
 // main.cpp
 // Description:
 // This module serves as the entry point for the ferry reservation system.
-// It handles the main menu and orchestrates the startup/shutdown of the system.
+// It handles the startup/shutdown of the system.
 //
 // Revision History:
-// Rev. 1 - 2025/07/06 - Team 12
+// Rev. 1 - 2025/07/07 - Team 12
 // - Created initial version
 //*******************************
+
 #include <iostream>
-#include <string>
-#include <limits>
 #include "main.h"
-#include "vehicle.h"
-#include "reservation.h"
-#include "vessel.h"
-#include "sailing.h"
 #include "UI.h"
 
+//------
+// Description:
+// Main calls UI and handles startup and shutdown functions
 int main() {
   if (!startup()) {
     cerr << "System failed to start up.\n";
   } 
-  renUI(); 
+  displayMainMenu(); 
   shutdown();
   return 0;
 }
