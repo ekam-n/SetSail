@@ -2,12 +2,11 @@
 //*******************************
 // vehicle.h
 // Description:
-// This module handles all vehicle-related operations including creation,
-// lookup, and storage of vehicle records (both regular and special vehicles).
+// This module handles vehicle operations including creation and lookup.
 //
 // Revision History:
-// Rev. 1 - 2025/07/05 - Team 12
-// - Created initial version with roll-up implementation for special vehicles
+// Rev. 1 - 2025/07/06 - Team 12
+// - Updated with all methods from OCD diagrams
 //*******************************
 
 #include <string>
@@ -37,6 +36,21 @@ bool createVehicle(
 
 //------
 // Description:
+// Creates a new special vehicle record.
+// Returns true if successful, false if vehicle already exists.
+// Precondition:
+// licensePlate must be unique
+// Postcondition:
+// New special vehicle is added to persistent storage
+bool createSpecialVehicle(
+    const std::string& licensePlate,  // [in] Vehicle license plate
+    const std::string& phoneNumber,   // [in] Owner's phone number
+    float height,                     // [in] Vehicle height (>2m)
+    float length                      // [in] Vehicle length (>7m)
+);
+
+//------
+// Description:
 // Finds a vehicle by license plate.
 // Returns true if found, false otherwise.
 // Precondition:
@@ -46,4 +60,16 @@ bool createVehicle(
 bool findVehicle(
     const std::string& licensePlate,  // [in] Vehicle license to search for
     Vehicle& outVehicle               // [out] Found vehicle data
+);
+
+//------
+// Description:
+// Checks if a vehicle exists in the system.
+// Returns true if exists, false otherwise.
+// Precondition:
+// None
+// Postcondition:
+// None
+bool vehicleExists(
+    const std::string& licensePlate  // [in] Vehicle license to check
 );
