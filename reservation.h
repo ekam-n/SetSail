@@ -22,73 +22,63 @@ struct Reservation {
 
 //------
 // Description:
-// Creates a new reservation for a sailing.
-// Returns true if successful, false if sailing is full or doesn't exist.
-// Precondition:
-// sailingID and vehicleLicense must exist
-// Postcondition:
-// Reservation is created if capacity allows
-bool createReservation(
-    const std::string& sailingID,      // [in] Sailing to reserve
-    const std::string& vehicleLicense, // [in] Vehicle making reservation
-    unsigned int occupants,            // [in] Number of people in vehicle
-    float& outFare                     // [out] Calculated fare amount
-);
-
-//------
-// Description:
-// Creates a new special vehicle reservation (handles vehicle creation if needed).
-// Returns true if successful, false if capacity issues.
-// Precondition:
-// sailingID must exist
-// Postcondition:
-// Reservation and possibly new vehicle are created
-bool createSpecialReservation(
-    const std::string& sailingID,      // [in] Sailing to reserve
-    const std::string& vehicleLicense, // [in] Vehicle making reservation
-    unsigned int occupants,            // [in] Number of people in vehicle
-    float height,                      // [in] Vehicle height
-    float length,                      // [in] Vehicle length
-    const std::string& phoneNumber,    // [in] Owner's phone number
-    float& outFare                     // [out] Calculated fare amount
-);
-
-//------
-// Description:
-// Cancels an existing reservation.
-// Returns true if successful, false if reservation doesn't exist.
+// Initializes reservation module. Returns true if successful.
 // Precondition:
 // None
-// Postcondition:
-// Reservation is removed and capacity is updated
+bool init();
+
+//------
+// Description:
+// Shuts down reservation module.
+// Precondition:
+// Module must be initialized
+void shutdown();
+
+//------
+// Description:
+// Cancels a reservation. Returns true if successful.
+// Precondition:
+// Reservation must exist
 bool cancelReservation(
-    const std::string& sailingID,      // [in] Sailing to cancel from
-    const std::string& vehicleLicense  // [in] Vehicle to cancel
+    const std::string& sailingID,  // [in] Sailing ID
+    const std::string& license     // [in] Vehicle license
 );
 
 //------
 // Description:
-// Checks if a sailing has capacity for additional people.
-// Returns true if capacity available, false otherwise.
+// Checks in a reservation. Returns true if successful.
 // Precondition:
-// sailingID must exist
-// Postcondition:
-// None
-bool hasPeopleCapacity(
-    const std::string& sailingID,  // [in] Sailing to check
-    unsigned int additionalPeople   // [in] Number of people to check for
+// Reservation must exist
+bool checkIn(
+    const std::string& sailingID,  // [in] Sailing ID
+    const std::string& license     // [in] Vehicle license
 );
 
 //------
 // Description:
-// Checks if a sailing has capacity for a vehicle of given dimensions.
-// Returns true if capacity available, false otherwise.
+// Creates a new reservation. Returns true if successful.
 // Precondition:
-// sailingID must exist
-// Postcondition:
-// None
-bool hasVehicleCapacity(
-    const std::string& sailingID,  // [in] Sailing to check
-    float height,                  // [in] Vehicle height
-    float length                   // [in] Vehicle length
+// Valid reservation data
+bool createReservation(
+    const Reservation& res  // [in] Reservation to create
+);
+
+//------
+// Description:
+// Creates a new special reservation. Returns true if successful.
+// Precondition:
+// Valid reservation data
+bool createSpecialReservation(
+    const Reservation& res,  // [in] Reservation data
+    float height,            // [in] Vehicle height
+    float length             // [in] Vehicle length
+);
+
+//------
+// Description:
+// Logs vehicle arrivals for a sailing.
+// Precondition:
+// Sailing must exist
+void logArrivals(
+    const std::string& sailingID  // [in] Sailing ID
 );

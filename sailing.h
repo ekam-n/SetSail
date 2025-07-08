@@ -26,54 +26,86 @@ struct Sailing {
 
 //------
 // Description:
-// Creates a new sailing with the specified parameters.
-// Returns true if successful, false if vessel doesn't exist or sailingID exists.
+// Initializes sailing module. Returns true if successful.
 // Precondition:
-// vesselName must exist in the system
-// sailingID must be unique
-// Postcondition:
-// New sailing is created with initial capacity values
+// None
+bool init();
+
+//------
+// Description:
+// Shuts down sailing module.
+// Precondition:
+// Module must be initialized
+void shutdown();
+
+//------
+// Description:
+// Adds occupants to a sailing. Returns true if successful.
+// Precondition:
+// Sailing must exist
+bool addOccupants(
+    const std::string& sailingID,  // [in] Sailing ID
+    int people,                    // [in] Number of people
+    float vehicleLength            // [in] Vehicle length
+);
+
+//------
+// Description:
+// Checks if vessel has sailings. Returns true if sailings exist.
+// Precondition:
+// Vessel must exist
+bool checkVesselHasSailings(
+    const std::string& vesselName  // [in] Vessel name
+);
+
+//------
+// Description:
+// Creates a new sailing. Returns true if successful.
+// Precondition:
+// Valid sailing data
 bool createSailing(
-    const std::string& sailingID,     // [in] Unique sailing identifier
-    const std::string& vesselName,    // [in] Name of vessel for this sailing
-    const std::string& departureTerm, // [in] Departure terminal code
-    const std::string& departureDay,  // [in] Departure day (DD format)
-    const std::string& departureTime  // [in] Departure time (HH:MM format)
+    const Sailing& sailing  // [in] Sailing to create
 );
 
 //------
 // Description:
-// Deletes a sailing by ID.
-// Returns true if successful, false if sailing doesn't exist.
+// Deletes a sailing. Returns true if successful.
 // Precondition:
-// None
-// Postcondition:
-// Sailing is removed if it existed
+// Sailing must exist
 bool deleteSailing(
-    const std::string& sailingID  // [in] Sailing ID to delete
+    const std::string& sailingID  // [in] Sailing ID
 );
 
 //------
 // Description:
-// Gets sailing details including current capacity.
-// Returns true if found, false otherwise.
+// Gets people occupants for reservation. Returns count.
 // Precondition:
-// None
-// Postcondition:
-// If found, outSailing contains sailing data
-bool getSailingDetails(
-    const std::string& sailingID,  // [in] Sailing to find
-    Sailing& outSailing            // [out] Found sailing data
+// Sailing must exist
+int getPeopleOccupantsForReservation(
+    const std::string& sailingID  // [in] Sailing ID
 );
 
 //------
 // Description:
-// Checks if a sailing exists.
-// Returns true if exists, false otherwise.
+// Gets vehicle occupants. Returns total length.
 // Precondition:
-// None
-// Postcondition:
-// None
-bool sailingExists(
-    const std::string& sailingID  // [in] Sailing to check
+// Sailing must exist
+float getVehicleOccupants(
+    const std::string& sailingID  // [in] Sailing ID
 );
+
+//------
+// Description:
+// Gets vehicle occupants for reservation. Returns length.
+// Precondition:
+// Sailing must exist
+float getVehicleOccupantsForReservation(
+    const std::string& sailingID  // [in] Sailing ID
+);
+
+//------
+// Description:
+// Prints sailing report.
+// Precondition:
+// File must be open
+void printSailingReport();

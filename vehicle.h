@@ -21,55 +21,43 @@ struct Vehicle {
 
 //------
 // Description:
-// Creates a new vehicle record in the system.
-// Returns true if successful, false if vehicle already exists.
+// Initializes vehicle module. Returns true if successful.
 // Precondition:
-// licensePlate must be unique
-// Postcondition:
-// New vehicle is added to persistent storage
-bool createVehicle(
-    const std::string& licensePlate,  // [in] Vehicle license plate
-    const std::string& phoneNumber,   // [in] Owner's phone number
-    float height,                     // [in] Vehicle height (0 for regular)
-    float length                      // [in] Vehicle length (0 for regular)
+// None
+bool init();
+
+//------
+// Description:
+// Shuts down vehicle module.
+// Precondition:
+// Module must be initialized
+void shutdown();
+
+//------
+// Description:
+// Checks license for reservation. Returns true if valid.
+// Precondition:
+// License must exist
+bool checkLicenseForReservation(
+    const std::string& license  // [in] Vehicle license
 );
 
 //------
 // Description:
-// Creates a new special vehicle record.
-// Returns true if successful, false if vehicle already exists.
+// Creates vehicle for reservation. Returns true if successful.
 // Precondition:
-// licensePlate must be unique
-// Postcondition:
-// New special vehicle is added to persistent storage
-bool createSpecialVehicle(
-    const std::string& licensePlate,  // [in] Vehicle license plate
-    const std::string& phoneNumber,   // [in] Owner's phone number
-    float height,                     // [in] Vehicle height (>2m)
-    float length                      // [in] Vehicle length (>7m)
+// Valid vehicle data
+bool createVehicleForReservation(
+    const Vehicle& vehicle  // [in] Vehicle to create
 );
 
 //------
 // Description:
-// Finds a vehicle by license plate.
-// Returns true if found, false otherwise.
+// Creates special vehicle for reservation. Returns true if successful.
 // Precondition:
-// None
-// Postcondition:
-// If found, outVehicle contains the vehicle data
-bool findVehicle(
-    const std::string& licensePlate,  // [in] Vehicle license to search for
-    Vehicle& outVehicle               // [out] Found vehicle data
-);
-
-//------
-// Description:
-// Checks if a vehicle exists in the system.
-// Returns true if exists, false otherwise.
-// Precondition:
-// None
-// Postcondition:
-// None
-bool vehicleExists(
-    const std::string& licensePlate  // [in] Vehicle license to check
+// Valid vehicle data
+bool createSpecialVehicleForReservation(
+    const Vehicle& vehicle,  // [in] Vehicle data
+    float height,            // [in] Vehicle height
+    float length             // [in] Vehicle length
 );

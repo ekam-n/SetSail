@@ -2,29 +2,16 @@
 //*******************************
 // main.h
 // Description:
-// This module serves as the entry point for the ferry reservation system.
-// It handles the main menu and orchestrates the startup/shutdown of the system.
+// This module is the main entry point of the application.
 //
 // Revision History:
-// Rev. 1 - 2025/07/05 - Team 12
-// - Created initial version with startup and shutdown functions
+// Rev. 1 - 2025/07/07 - Team 12
+// - Created initial version
 //*******************************
 
 //------
 // Description:
-// Initializes the system by opening all necessary files and loading initial data.
-// Returns true if successful, false otherwise.
+// Shuts down the entire system.
 // Precondition:
-// None
-// Postcondition:
-// System is ready for user interaction if return value is true
-bool startup();
-
-//------
-// Description:
-// Shuts down the system by saving data and closing files.
-// Precondition:
-// System must be in a valid state (startup was successful)
-// Postcondition:
-// All data is saved and resources are released
+// System must be running
 void shutdown();

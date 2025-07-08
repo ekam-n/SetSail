@@ -22,52 +22,41 @@ struct Vessel {
 
 //------
 // Description:
-// Creates a new ferry vessel record.
-// Returns true if successful, false if vessel name exists.
+// Initializes vessel module. Returns true if successful.
 // Precondition:
-// vesselName must be unique
-// Postcondition:
-// New vessel is added to the system
+// None
+bool init();
+
+//------
+// Description:
+// Shuts down vessel module.
+// Precondition:
+// Module must be initialized
+void shutdown();
+
+//------
+// Description:
+// Checks vessel for sailing. Returns true if valid.
+// Precondition:
+// Vessel must exist
+bool checkVesselForSailing(
+    const std::string& vesselName  // [in] Vessel name
+);
+
+//------
+// Description:
+// Creates a new vessel. Returns true if successful.
+// Precondition:
+// Valid vessel data
 bool createVessel(
-    const std::string& vesselName,    // [in] Unique vessel identifier
-    float highCeilingLaneLength,      // [in] High ceiling lane capacity
-    float lowCeilingLaneLength,       // [in] Low ceiling lane capacity
-    unsigned int maxPassengers        // [in] Maximum passenger capacity
+    const Vessel& vessel  // [in] Vessel to create
 );
 
 //------
 // Description:
-// Deletes a vessel by name.
-// Returns true if successful, false if vessel doesn't exist or has sailings.
+// Deletes a vessel. Returns true if successful.
 // Precondition:
-// None
-// Postcondition:
-// Vessel is removed if no sailings exist for it
+// Vessel must exist
 bool deleteVessel(
-    const std::string& vesselName  // [in] Vessel to delete
-);
-
-//------
-// Description:
-// Checks if a vessel has any associated sailings.
-// Returns true if sailings exist, false otherwise.
-// Precondition:
-// vesselName must exist
-// Postcondition:
-// None
-bool vesselHasSailings(
-    const std::string& vesselName  // [in] Vessel to check
-);
-
-//------
-// Description:
-// Finds a vessel by name.
-// Returns true if found, false otherwise.
-// Precondition:
-// None
-// Postcondition:
-// If found, outVessel contains vessel data
-bool findVessel(
-    const std::string& vesselName,  // [in] Vessel to find
-    Vessel& outVessel               // [out] Found vessel data
+    const std::string& vesselName  // [in] Vessel name
 );
