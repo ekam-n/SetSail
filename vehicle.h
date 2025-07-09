@@ -2,62 +2,67 @@
 //*******************************
 // vehicle.h
 // Description:
-// This module handles vehicle operations including creation and lookup.
+// This class handles all vehicle operations including creation, validation,
+// and management of both regular and special vehicles.
 //
 // Revision History:
-// Rev. 1 - 2025/07/06 - Team 12
-// - Updated with all methods from OCD diagrams
+// Rev. 1 - 2025/07/07 - Team 12
+// - Converted to class format with private member variables
 //*******************************
 
 #include <string>
 
-// Vehicle structure (roll-up implementation)
-struct Vehicle {
-    std::string licensePlate;  // [in] Vehicle license plate (primary key)
-    std::string phoneNumber;   // [in] Owner's phone number
-    float height;              // [in] Vehicle height in meters (0 for regular)
-    float length;              // [in] Vehicle length in meters (0 for regular)
+class Vehicle {
+public:
+    //------
+    // Description:
+    // Initializes the Vehicle class. Returns true if successful.
+    // Precondition:
+    // None
+    bool init();
+
+    //------
+    // Description:
+    // Shuts down the Vehicle class and cleans up resources.
+    // Precondition:
+    // Class must be initialized
+    void shutdown();
+
+    //------
+    // Description:
+    // Checks if license is valid for reservations. Returns true if valid.
+    // Precondition:
+    // License must exist in system
+    bool checkLicenseForReservation(
+        const std::string& license  // [in] Vehicle license to check
+    );
+
+    //------
+    // Description:
+    // Creates a standard vehicle for reservations. Returns true if successful.
+    // Precondition:
+    // Valid vehicle data and unique license
+    bool createVehicleForReservation(
+        const std::string& licensePlate,  // [in] Vehicle license plate
+        const std::string& phoneNumber    // [in] Owner's phone number
+    );
+
+    //------
+    // Description:
+    // Creates a special vehicle for reservations. Returns true if successful.
+    // Precondition:
+    // Valid vehicle data and unique license
+    bool createSpecialVehicleForReservation(
+        const std::string& licensePlate,  // [in] Vehicle license plate
+        const std::string& phoneNumber,   // [in] Owner's phone number
+        float height,                     // [in] Vehicle height in meters
+        float length                      // [in] Vehicle length in meters
+    );
+
+private:
+    std::string currentLicensePlate;  // Currently processed vehicle license
+    std::string currentPhoneNumber;   // Currently processed owner phone
+    float currentHeight;              // Currently processed vehicle height (0 for regular)
+    float currentLength;              // Currently processed vehicle length (0 for regular)
+    bool isSpecialVehicle;            // Flag indicating special vehicle status
 };
-
-//------
-// Description:
-// Initializes vehicle module. Returns true if successful.
-// Precondition:
-// None
-bool init();
-
-//------
-// Description:
-// Shuts down vehicle module.
-// Precondition:
-// Module must be initialized
-void shutdown();
-
-//------
-// Description:
-// Checks license for reservation. Returns true if valid.
-// Precondition:
-// License must exist
-bool checkLicenseForReservation(
-    const std::string& license  // [in] Vehicle license
-);
-
-//------
-// Description:
-// Creates vehicle for reservation. Returns true if successful.
-// Precondition:
-// Valid vehicle data
-bool createVehicleForReservation(
-    const Vehicle& vehicle  // [in] Vehicle to create
-);
-
-//------
-// Description:
-// Creates special vehicle for reservation. Returns true if successful.
-// Precondition:
-// Valid vehicle data
-bool createSpecialVehicleForReservation(
-    const Vehicle& vehicle,  // [in] Vehicle data
-    float height,            // [in] Vehicle height
-    float length             // [in] Vehicle length
-);

@@ -2,23 +2,33 @@
 //*******************************
 // ui.h
 // Description:
-// This module handles all user interface operations.
+// This class handles all user interface operations including menu display,
+// input handling, and user interaction for the ferry reservation system.
 //
 // Revision History:
 // Rev. 1 - 2025/07/07 - Team 12
-// - Created initial version
+// - Converted to class format with initialization/shutdown
 //*******************************
 
-//------
-// Description:
-// Initializes UI module. Returns true if successful.
-// Precondition:
-// None
-bool init();
+class UserInterface {
+public:
+    //------
+    // Description:
+    // Initializes the UserInterface class. Returns true if successful.
+    // Precondition:
+    // None
+    bool init();
 
-//------
-// Description:
-// Shuts down UI module.
-// Precondition:
-// Module must be initialized
-void shutdown();
+    //------
+    // Description:
+    // Shuts down the UserInterface class and releases resources.
+    // Precondition:
+    // Class must be initialized
+    void shutdown();
+
+private:
+    // Private member variables would be declared here
+    // Example:
+    // bool isInitialized;
+    // MenuState currentMenuState;
+};
