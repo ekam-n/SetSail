@@ -12,14 +12,14 @@
 
 #include <iostream>
 #include "main.h"
-#include "UI.h"
+#include "ui.h"
 
 //------
 // Description:
 // Main calls UI and handles startup and shutdown functions
 int main() {
   if (!startup()) {
-    cerr << "System failed to start up.\n";
+    std::cerr << "System failed to start up.\n";
   } 
   displayMainMenu(); 
   shutdown();
