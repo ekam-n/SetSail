@@ -6,10 +6,11 @@
 #ifndef SAILING_H
 #define SAILING_H
 
-#include <string>
-#include "vessel.h"       // For vessel existence checks
-#include "reservation.h"  // For reservation-related queries
+// #include <string>
+// #include "vessel.h"       // For vessel existence checks
+// #include "reservation.h"  // For reservation-related queries
 #include "sailing_io.h"   // Bottom-level ASM for file I/O operations
+#include <cstddef>
 
 // The SailingClass encapsulates all sailing-related scenarios.
 // All methods are static; no class instance is required.

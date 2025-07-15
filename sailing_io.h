@@ -6,7 +6,7 @@
 #ifndef SAILING_IO_H
 #define SAILING_IO_H
 
-#include <string>
+// #include <string>
 #include "sailing.h"   // for SailingRecord
 
 class SailingIO {

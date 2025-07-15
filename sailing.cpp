@@ -12,7 +12,7 @@
 
 #include "sailing.h"    // For SailingClass interface :contentReference[oaicite:2]{index=2}
 #include "sailing_io.h" // For low‑level I/O
-#include "vessel.h"     // For VesselClass::checkVesselExists()
+// #include "vessel.h"     // For VesselClass::checkVesselExists()
 
 #include <iostream>
 #include <stdexcept>
@@ -35,10 +35,10 @@ void SailingClass::createSailing() {
 
     do {
         std::cout << "Enter Vessel name for sailing: ";
-        std::getline(std::cin, vid);
-        if (!VesselClass::checkVesselExists(vid))
-            std::cout << "Vessel not found. Please re-enter.\n";
-        else break;
+        // std::getline(std::cin, vid);
+        // if (!VesselClass::checkVesselExists(vid))
+        //     std::cout << "Vessel not found. Please re-enter.\n";
+        // else break;
     } while (true);
 
     std::cout << "Enter Low Return Limit (LRL): ";

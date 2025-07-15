@@ -66,7 +66,7 @@ void SailingIO::deleteSailing(const std::string& sailingID) {
     for (size_t i = 0; i < count; ++i) {
         fs.read(reinterpret_cast<char*>(&temp), recSize);
         if (std::string(temp.sailingID) == sailingID) {
-            posToDelete = fs.tellg() - recSize;
+            posToDelete = static_cast<std::streamoff>(fs.tellg()) - recSize;
             break;
         }
     }
@@ -79,7 +79,7 @@ void SailingIO::deleteSailing(const std::string& sailingID) {
     fs.flush(); fs.close();
 
     // Truncate file by one record
-    truncate(FILENAME.c_str(), fileSize - recSize);
+    std::filesystem::resize_file(FILENAME, fileSize - recSize);
     open();
 }
 
