@@ -26,23 +26,19 @@ void SailingClass::init() {
     SailingIO::reset();
 }
 
-//---------------------------------------------------------
-// static void SailingClass::createSailing()
-// Prompt user for fields, validate vessel, and persist.
 void SailingClass::createSailing() {
     std::string sid, vid;
-    float hrl, lrl;
+    float lrl, hrl;
 
     std::cout << "Enter new Sailing ID: ";
     std::getline(std::cin, sid);
 
-    // Vessel validation
     do {
         std::cout << "Enter Vessel name for sailing: ";
         std::getline(std::cin, vid);
-        if (!VesselClass::checkVesselExists(vid)) {
+        if (!VesselClass::checkVesselExists(vid))
             std::cout << "Vessel not found. Please re-enter.\n";
-        } else break;
+        else break;
     } while (true);
 
     std::cout << "Enter Low Return Limit (LRL): ";
@@ -60,41 +56,26 @@ void SailingClass::createSailing() {
     }
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    SailingClass::Record rec(sid, vid, hrl, lrl);
+    Record rec(sid.c_str(), vid.c_str(), hrl, lrl);
     SailingIO::createSailing(rec);
     std::cout << "Sailing created successfully.\n";
 }
 
-//---------------------------------------------------------
-// static void SailingClass::validateSailingID(const std::string& sailingID)
-// Ensure the given sailingID exists; throws if not.
 void SailingClass::validateSailingID(const std::string& sailingID) {
-    if (SailingIO::getPeopleOccupants(sailingID) < 0) {
+    if (SailingIO::getPeopleOccupants(sailingID) < 0)
         throw std::runtime_error("Sailing ID not found: " + sailingID);
-    }
 }
 
-//---------------------------------------------------------
-// static void SailingClass::deleteSailing(const std::string& sailingID)
-// Delete an existing sailing by ID. Throws if not found.
 void SailingClass::deleteSailing(const std::string& sailingID) {
     validateSailingID(sailingID);
     SailingIO::deleteSailing(sailingID);
     std::cout << "Sailing deleted successfully.\n";
 }
 
-//---------------------------------------------------------
-// static bool SailingClass::checkVesselHasSailings(const std::string& vesselName)
-// Check whether a given vessel has any sailings scheduled.
 bool SailingClass::checkVesselHasSailings(const std::string& vesselName) {
     return SailingIO::checkSailingsForVessel(vesselName);
 }
 
-//---------------------------------------------------------
-// static void SailingClass::addOccupants(const std::string& sailingID,
-//                                        int peopleCount,
-//                                        int /*vehicleCount*/)
-// Add occupant counts to an existing sailing.
 void SailingClass::addOccupants(const std::string& sailingID,
                                 int peopleCount,
                                 int /*vehicleCount*/) {
@@ -102,34 +83,19 @@ void SailingClass::addOccupants(const std::string& sailingID,
     SailingIO::addPeopleOccupants(sailingID, peopleCount);
 }
 
-//---------------------------------------------------------
-// static int SailingClass::getPeopleOccupantsForReservation(
-//                const std::string& sailingID)
-// Retrieve the number of people currently reserved on a sailing.
 int SailingClass::getPeopleOccupantsForReservation(const std::string& sailingID) {
     validateSailingID(sailingID);
     return SailingIO::getPeopleOccupants(sailingID);
 }
 
-//---------------------------------------------------------
-// static int SailingClass::getVehicleOccupantsForReservation(
-//                const std::string& /*sailingID*/)
-// Delegate to reservation system; not stored here.
-int SailingClass::getVehicleOccupantsForReservation(const std::string& sailingID) {
-    // Likely implemented by scanning ReservationIO; stubbed here
+int SailingClass::getVehicleOccupantsForReservation(const std::string& /*sailingID*/) {
     return 0;
 }
 
-//---------------------------------------------------------
-// static void SailingClass::printSailingReport()
-// Print a paginated report of all sailings.
 void SailingClass::printSailingReport() {
     SailingIO::printSailingReport();
 }
 
-//---------------------------------------------------------
-// static void SailingClass::shutdown()
-// Cleanly close the sailing subsystem (flush & close file).
 void SailingClass::shutdown() {
     SailingIO::close();
 }

@@ -15,27 +15,35 @@
 // All methods are static; no class instance is required.
 class SailingClass {
 public:
+    // Fixed sizes for C-string fields
+    static const size_t ID_LEN = 32;
+    static const size_t VLEN   = 32;
+
     // In-memory representation of a sailing record
     struct Record {
-        std::string sailingID;   // Primary key
-        std::string vessel_ID;   // Foreign key (Ferry/Vessel)
-        float       HRL = 0.0f;  // High Return Limit
-        float       LRL = 0.0f;  // Low Return Limit
-        int         on_board = 0;// Current occupant count
+        char   sailingID[ID_LEN];   // Primary key, fixed-length C-string
+        char   vessel_ID[VLEN];     // Foreign key, fixed-length C-string
+        float  HRL;                 // High Return Limit
+        float  LRL;                 // Low Return Limit
+        int    on_board;            // Current occupant count
 
-        // Default constructor
-        Record() = default;
+        // Default constructor: zero-initialize
+        Record() {
+            std::memset(sailingID, 0, ID_LEN);
+            std::memset(vessel_ID, 0, VLEN);
+            HRL = 0.0f;  LRL = 0.0f;  on_board = 0;
+        }
 
-        // Convenience constructor
-        Record(const std::string& sid,
-               const std::string& vid,
-               float hrl_value,
-               float lrl_value)
-          : sailingID(sid)
-          , vessel_ID(vid)
-          , HRL(hrl_value)
-          , LRL(lrl_value)
-          , on_board(0) {}
+        // Convenience constructor from C-strings
+        Record(const char* sid, const char* vid, float hrl_value, float lrl_value) {
+            std::strncpy(sailingID, sid, ID_LEN);
+            sailingID[ID_LEN - 1] = '\0';
+            std::strncpy(vessel_ID, vid, VLEN);
+            vessel_ID[VLEN - 1] = '\0';
+            HRL = hrl_value;
+            LRL = lrl_value;
+            on_board = 0;
+        }
     };
 
     // Initialize the sailing subsystem, opening and resetting its file.
@@ -44,7 +52,7 @@ public:
     // Create a new sailing record, prompting user for required fields.
     static void createSailing();
 
-    // Delete an existing sailing by ID. Throws if not found or not complete.
+    // Delete an existing sailing by ID. Throws if not found.
     static void deleteSailing(const std::string& sailingID);
 
     // Check whether a given vessel has any sailings scheduled.

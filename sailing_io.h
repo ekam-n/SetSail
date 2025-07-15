@@ -18,21 +18,21 @@ public:
     static void reset();
 
     /// Append a new SailingRecord to the end of the file
-    static void createSailing(const SailingRecord& rec);
+    static void createSailing(const SailingClass::Record& rec);
 
     /// Delete the record matching the given sailing ID
     static void deleteSailing(const std::string& sailingID);
 
-    /// Return true if any record’s vesselName matches the given name
+    /// Return true if any record’s vessel_ID matches the given name
     static bool checkSailingsForVessel(const std::string& vesselName);
 
-    /// Increment the peopleOccupants field for the record with this ID
-    static void addPeopleOccupants(const std::string& id, int count);
+    /// Increment the on_board field for the record with this ID
+    static void addPeopleOccupants(const std::string& sailingID, int count);
 
-    /// Return the peopleOccupants count for the record with this ID
-    static int getPeopleOccupants(const std::string& id);
+    /// Return the on_board count for the record with this ID
+    static int getPeopleOccupants(const std::string& sailingID);
 
-    /// Print all records in a paginated report (e.g. 5 per page)
+    /// Print all records in a paginated report (e.g., 5 per page)
     static void printSailingReport();
 
     /// Close the underlying file stream
