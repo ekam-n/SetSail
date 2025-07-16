@@ -6,15 +6,14 @@
 #ifndef SAILING_H
 #define SAILING_H
 
-// #include <string>
+#include <string>
 // #include "vessel.h"       // For vessel existence checks
 // #include "reservation.h"  // For reservation-related queries
-#include "sailing_io.h"   // Bottom-level ASM for file I/O operations
 #include <cstddef>
 
-// The SailingClass encapsulates all sailing-related scenarios.
+// The Sailing Class encapsulates all sailing-related scenarios.
 // All methods are static; no class instance is required.
-class SailingClass {
+class Sailing {
 public:
     // Fixed sizes for C-string fields
     static const size_t ID_LEN = 32;

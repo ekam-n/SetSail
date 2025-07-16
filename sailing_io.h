@@ -6,7 +6,7 @@
 #ifndef SAILING_IO_H
 #define SAILING_IO_H
 
-// #include <string>
+#include <string>
 #include "sailing.h"   // for SailingRecord
 
 class SailingIO {
@@ -18,7 +18,7 @@ public:
     static void reset();
 
     /// Append a new SailingRecord to the end of the file
-    static void createSailing(const SailingClass::Record& rec);
+    static void createSailing(const Sailing::Record& rec);
 
     /// Delete the record matching the given sailing ID
     static void deleteSailing(const std::string& sailingID);

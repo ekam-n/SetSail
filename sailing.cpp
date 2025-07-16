@@ -4,29 +4,28 @@
 //   1.0 2025-07-20  Initial implementation
 //============================================================
 //
-// Implements the SailingClass “business logic”: prompts,
+// Implements the Sailing “business logic”: prompts,
 // validation, and orchestration of file‑I/O calls via SailingIO.
 // Throws on invalid IDs.
 //
 //============================================================
 
-#include "sailing.h"    // For SailingClass interface :contentReference[oaicite:2]{index=2}
+#include "sailing.h"    // For Sailing interface :contentReference[oaicite:2]{index=2}
 #include "sailing_io.h" // For low‑level I/O
-// #include "vessel.h"     // For VesselClass::checkVesselExists()
 
 #include <iostream>
 #include <stdexcept>
 #include <limits>
 
 //---------------------------------------------------------
-// static void SailingClass::init()
+// static void Sailing::init()
 // Initialize the sailing subsystem, opening and resetting its file.
-void SailingClass::init() {
+void Sailing::init() {
     SailingIO::open();
     SailingIO::reset();
 }
 
-void SailingClass::createSailing() {
+void Sailing::createSailing() {
     std::string sid, vid;
     float lrl, hrl;
 
@@ -61,41 +60,41 @@ void SailingClass::createSailing() {
     std::cout << "Sailing created successfully.\n";
 }
 
-void SailingClass::validateSailingID(const std::string& sailingID) {
+void Sailing::validateSailingID(const std::string& sailingID) {
     if (SailingIO::getPeopleOccupants(sailingID) < 0)
         throw std::runtime_error("Sailing ID not found: " + sailingID);
 }
 
-void SailingClass::deleteSailing(const std::string& sailingID) {
+void Sailing::deleteSailing(const std::string& sailingID) {
     validateSailingID(sailingID);
     SailingIO::deleteSailing(sailingID);
     std::cout << "Sailing deleted successfully.\n";
 }
 
-bool SailingClass::checkVesselHasSailings(const std::string& vesselName) {
+bool Sailing::checkVesselHasSailings(const std::string& vesselName) {
     return SailingIO::checkSailingsForVessel(vesselName);
 }
 
-void SailingClass::addOccupants(const std::string& sailingID,
+void Sailing::addOccupants(const std::string& sailingID,
                                 int peopleCount,
                                 int /*vehicleCount*/) {
     validateSailingID(sailingID);
     SailingIO::addPeopleOccupants(sailingID, peopleCount);
 }
 
-int SailingClass::getPeopleOccupantsForReservation(const std::string& sailingID) {
+int Sailing::getPeopleOccupantsForReservation(const std::string& sailingID) {
     validateSailingID(sailingID);
     return SailingIO::getPeopleOccupants(sailingID);
 }
 
-int SailingClass::getVehicleOccupantsForReservation(const std::string& /*sailingID*/) {
+int Sailing::getVehicleOccupantsForReservation(const std::string& /*sailingID*/) {
     return 0;
 }
 
-void SailingClass::printSailingReport() {
+void Sailing::printSailingReport() {
     SailingIO::printSailingReport();
 }
 
-void SailingClass::shutdown() {
+void Sailing::shutdown() {
     SailingIO::close();
 }

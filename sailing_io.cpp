@@ -22,7 +22,7 @@
 namespace {
     const std::string FILENAME = "sailings.dat";
     std::fstream fs;
-    using Record = SailingClass::Record;
+    using Record = Sailing::Record;
 }
 
 void SailingIO::open() {
