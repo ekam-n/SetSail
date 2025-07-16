@@ -7,33 +7,37 @@
 //
 // Revision History:
 // Rev. 1 - 2025/07/07 - Team 12
+// Rev. 2 - 2025/07/16
 // - Converted to class format with private member variables
 //*******************************
 
+#pragma once
 #include <string>
 
 class Vehicle {
 public:
+
+    friend class VehicleIO;
     //------
     // Description:
     // Initializes the Vehicle class. Returns true if successful.
     // Precondition:
     // None
-    bool init();
+    static bool init();
 
     //------
     // Description:
     // Shuts down the Vehicle class and cleans up resources.
     // Precondition:
     // Class must be initialized
-    void shutdown();
+    static void shutdown();
 
     //------
     // Description:
     // Checks if license is valid for reservations. Returns true if valid.
     // Precondition:
     // License must exist in system
-    bool checkLicenseForReservation(
+    static bool checkLicenseForReservation(
         const std::string& license  // [in] Vehicle license to check
     );
 
@@ -42,7 +46,7 @@ public:
     // Creates a standard vehicle for reservations. Returns true if successful.
     // Precondition:
     // Valid vehicle data and unique license
-    bool createVehicleForReservation(
+    static bool createVehicleForReservation(
         const std::string& licensePlate,  // [in] Vehicle license plate
         const std::string& phoneNumber    // [in] Owner's phone number
     );
@@ -52,7 +56,7 @@ public:
     // Creates a special vehicle for reservations. Returns true if successful.
     // Precondition:
     // Valid vehicle data and unique license
-    bool createSpecialVehicleForReservation(
+    static bool createSpecialVehicleForReservation(
         const std::string& licensePlate,  // [in] Vehicle license plate
         const std::string& phoneNumber,   // [in] Owner's phone number
         float height,                     // [in] Vehicle height in meters
@@ -60,9 +64,9 @@ public:
     );
 
 private:
-    std::string currentLicensePlate;  // Currently processed vehicle license
-    std::string currentPhoneNumber;   // Currently processed owner phone
-    float currentHeight;              // Currently processed vehicle height (0 for regular)
-    float currentLength;              // Currently processed vehicle length (0 for regular)
-    bool isSpecialVehicle;            // Flag indicating special vehicle status
+    static std::string currentLicensePlate;  // Currently processed vehicle license
+    static std::string currentPhoneNumber;   // Currently processed owner phone
+    static float currentHeight;              // Currently processed vehicle height (0 for regular)
+    static float currentLength;              // Currently processed vehicle length (0 for regular)
+    static bool isSpecialVehicle;            // Flag indicating special vehicle status
 };
