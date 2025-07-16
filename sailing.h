@@ -23,8 +23,8 @@ public:
     struct Record {
         char   sailingID[ID_LEN];   // Primary key, fixed-length C-string
         char   vessel_ID[VLEN];     // Foreign key, fixed-length C-string
-        float  HRL;                 // High Return Limit
-        float  LRL;                 // Low Return Limit
+        float  HRL;                 // High Remaining Length
+        float  LRL;                 // Low Remaining Length
         int    on_board;            // Current occupant count
 
         // Default constructor: zero-initialize

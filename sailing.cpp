@@ -34,20 +34,21 @@ void Sailing::createSailing() {
 
     do {
         std::cout << "Enter Vessel name for sailing: ";
-        // std::getline(std::cin, vid);
+        std::getline(std::cin, vid);
         // if (!VesselClass::checkVesselExists(vid))
         //     std::cout << "Vessel not found. Please re-enter.\n";
         // else break;
+        break;
     } while (true);
 
-    std::cout << "Enter Low Return Limit (LRL): ";
+    std::cout << "Enter Low Remaining Length (LRL): ";
     while (!(std::cin >> lrl)) {
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout << "Invalid. Re-enter LRL: ";
     }
 
-    std::cout << "Enter High Return Limit (HRL): ";
+    std::cout << "Enter High Remaining Length (HRL): ";
     while (!(std::cin >> hrl)) {
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
