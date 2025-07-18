@@ -16,6 +16,8 @@
 #include <string>
 
 class Reservation {
+    friend class ReservationIO;
+    
 public:
     //------
     // Description:

@@ -8,7 +8,7 @@ CXXFLAGS   := -std=c++17 -Wall -Wextra -pedantic \
 SRCS       := $(wildcard *.cpp)
 BUILD_DIR  := build
 OBJS       := $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(SRCS))
-TARGET     := $(BUILD_DIR)/sailing_app
+TARGET     := $(BUILD_DIR)/reservation_app
 
 .PHONY: all clean
 
