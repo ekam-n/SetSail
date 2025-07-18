@@ -115,5 +115,5 @@ bool Reservation::createSpecialReservation(
 // Precondition:
 // Sailing must exist
 void Reservation::logArrivals(const std::string& sailingID) {
-    std::cout << "Arrivals for sailing ID:" << sailingID << std::endl; // get rid of
+    // success msg? 
 }

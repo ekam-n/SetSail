@@ -18,7 +18,7 @@
 
 static std::fstream dataFile;
 static const std::string fileName = "reservations.dat"; // changed from currentFileName to fileName
-static bool isOpen = false;;
+static bool isOpen = false;
 
 //------
 // Description:
