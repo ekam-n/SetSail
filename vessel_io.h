@@ -3,7 +3,7 @@
 // CMPT 276 - Assignment 4
 // Description: Binary file I/O for Vessel records
 // Version: 1.0
-// Author: [Your Name]
+// Author:
 // History:
 // - 1.0: Initial version (2025-07-17)
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
