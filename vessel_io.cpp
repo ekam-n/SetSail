@@ -3,7 +3,7 @@
 // CMPT 276 - Assignment 4
 // Description: Implements binary file operations for Vessel records.
 // Version: 1.1
-// Author: [Your Name]
+// Author:
 // History:
 // - 1.0: Initial version (2025-07-17)
 // - 1.1: Fixed file descriptor error and added cross-platform truncation logic (2025-07-18)
