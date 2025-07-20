@@ -3,7 +3,7 @@
 // CMPT 276 - Assignment 4
 // Description: Implementation of the Vessel class.
 // Version: 1.0
-// Author: [Your Name]
+// Author:
 // History:
 // - 1.0: Initial implementation (2025-07-17)
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
