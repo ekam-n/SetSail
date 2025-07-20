@@ -3,7 +3,7 @@
 // CMPT 276 - Assignment 4
 // Description: Header file for Vessel class. Used for fixed-length binary storage.
 // Version: 1.0
-// Author: [Your Name]
+// Author:
 // History:
 // - 1.0: Initial creation (2025-07-17)
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
