@@ -3,7 +3,7 @@
 // CMPT 276 - Assignment 4
 // Description: Unit test for vessel file write/read binary operations
 // Version: 1.0
-// Author: [Your Name]
+// Author:
 // History:
 // - 1.0: Initial test created (2025-07-18)
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
