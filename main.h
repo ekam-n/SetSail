@@ -9,9 +9,6 @@
 // - Created initial version
 //*******************************
 
-bool startup();
-
-void displayMainMenu();
 //------
 // Description:
 // Shuts down the entire system.

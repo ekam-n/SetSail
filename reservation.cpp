@@ -12,6 +12,7 @@
 
 #include "reservation.h"
 #include "reservation_io.h"
+#include "sailing.h"
 #include <iostream>
 #include <string>
 
@@ -98,6 +99,25 @@ bool Reservation::createSpecialReservation(
     float height,                    // [in] Vehicle height in meters
     float length                     // [in] Vehicle length in meters
 ) {
+    if (!Sailing::validateSailingID(&sailingID)) {
+        return false;
+    }
+
+    if (!Sailing::getVehicleOccupantsForReservation(&sailingID)) {
+        return false;
+    } else {
+        if (Sailing::getVehicleOccupantsForReservation(&sailingID) )// > vesselCapacity ) return false;
+    
+    }
+
+    if (!Sailing::getPeopleOccupantsForReservation(&sailingID)) {
+        return false;
+    }
+
+    // check whether height or length exceeds 
+    // if height, check lane length
+    // if long, doesn't matter, can subtract from low to be safe
+
     Reservation res;
     res.currentSailingID = sailingID;
     res.currentVehicleLicense = vehicleLicense;
@@ -106,7 +126,7 @@ bool Reservation::createSpecialReservation(
     res.specialVehicleHeight = height;
     res.specialVehicleLength = length;
 
-    return ReservationIO::createReservation(res);
+    return ReservationIO::createSpecialReservation(res);
 }
 
 //------
@@ -115,5 +135,5 @@ bool Reservation::createSpecialReservation(
 // Precondition:
 // Sailing must exist
 void Reservation::logArrivals(const std::string& sailingID) {
-    // success msg? 
+    // need to use sailingID but not sure what's UI
 }
