@@ -1,4 +1,4 @@
-//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+//*******************************
 //*******************************
 // main.cpp
 // Description:
@@ -12,15 +12,33 @@
 
 #include <iostream>
 #include "ui.h"
+#include "vessel.h"
+#include "sailing.h"
+#include "reservation.h"
+#inlcude "vehicle.h"
+
+
+void startup() {
+    UserInterface::init();
+    Vessel::init();
+    Sailing::init();
+    Reservation::init();
+    Vehicle::init()
+}
+
+void shutdown() {
+  Vessel::shutdown();
+  Sailing::shutdown();
+  Reservation::shutdown();
+  Vehicle::shutdown();
+}
 
 //------
 // Description:
 // Main calls UI and handles startup and shutdown functions
 int main() {
-  if (!startup()) {
-    std::cerr << "System failed to start up.\n";
-  } 
-  displayMainMenu(); 
+  startup();
+  UserInterface::interface(); 
   shutdown();
   return 0;
 }
@@ -67,4 +85,4 @@ double calculateAverage(
     int b    // [in] second integer input
 );
 */
-.
+

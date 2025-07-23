@@ -1,4 +1,4 @@
-//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+//*******************************
 //*******************************
 // main.cpp
 // Description:
@@ -6,7 +6,7 @@
 // It handles the main menu and orchestrates the startup/shutdown of the system.
 //
 // Revision History:
-// Rev. 1 - 2025/07/17 - Team 12
+// Rev. 1 - 2025/07/23 - Team 12
 // - Created initial version
 //*******************************
 #include <iostream>
@@ -20,11 +20,20 @@
 #include "sailing.h"
 using namespace std;
 
-void clearInput() {
+void UserInterface::clearInput() {
   cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-void displayMainMenu() {
+bool UserInterface::init() {
+  return true; // bool or void?
+}
+
+bool UserInterface::shutdown() {
+  shutdown()
+  return true;
+}
+
+void UserInterface::displayMainMenu() {
   cout << "\n[ MAIN MENU ]\n\n"
     << "[1] Vessels\n"
     << "   -  Create_vessel\n"
@@ -41,7 +50,7 @@ void displayMainMenu() {
     << "[5] Print Sailing Report\n";
 }
 
-int getChoice() {
+int UserInterface::getChoice() {
   int choice;
   cin >> choice;
   clearInput();
@@ -49,7 +58,7 @@ int getChoice() {
 }
 
 // VESSELS
-void chooseVessel() {
+void UserInterface::chooseVessel() {
   cout << "===== Vessels =====\n"
     << "[1] Create_vessel\n"
     << "[2] Delete_vessel\n";
@@ -70,7 +79,7 @@ void chooseVessel() {
     string vesselID;
     cin >> vesselID;
     clearInput();
-    if (createVessel(vesselID, hcll, lcll, passNum))
+    if (Vessel::createVessel(vesselID, hcll, lcll, passNum))
       cout << "Vessel successfully created.\n";
     else 
       cout << "Vessel creation failed, name may already exist.\n";
@@ -85,7 +94,7 @@ void chooseVessel() {
     if (decision == 'N') {
       cout << "Vessel not deleted";
     } else if (decision == 'Y') {
-      if deleteVessel(vesselID) 
+      if Vessel::deleteVessel(vesselID) 
         cout << "Vessel successfully deleted.\n";
       else 
         cout << "Vessel not found.\n";
@@ -94,7 +103,7 @@ void chooseVessel() {
 }
 
 // SAILINGS
-void chooseSailing() {
+void UserInterface::chooseSailing() {
   cout << "===== Sailings =====\n"
     << "[1] Create_sailing\n"
     << "[2] Delete_sailing\n";
@@ -114,7 +123,7 @@ void chooseSailing() {
     cout << "Enter time of departure in 24-hour time: ";
     cin >> departTime;
     clearInput();
-    if (createSailing(vesselName, departTerm, departDay, departTime)) // REMOVE SAILING ID ARGUMENT + ASKING FOR IT IN CIN!!!!!
+    if (Sailing::createSailing(vesselName, departTerm, departDay, departTime)) // REMOVE SAILING ID ARGUMENT + ASKING FOR IT IN CIN!!!!!
       cout << "Sailing successfully created. The sailing ID is: " //ADD FUNCTION HERE!!!!!!!!!!
     else 
       cout << "Sailing ID could not be created\n"
@@ -129,7 +138,7 @@ void chooseSailing() {
     if (decision == 'N') {
       cout << "Sailing not deleted";
     } else if (decision == 'Y') {
-      if deleteSailing(sailingID) 
+      if Sailing::deleteSailing(sailingID) 
         cout << "Sailing successfully deleted.\n";
       else 
         cout << "Sailing not found or may have current reservations.\n";
@@ -156,18 +165,21 @@ void chooseReservation() {
     cin >> occupants;
     clearInput();
     cout << "Enter vehicle license: ";
-    cin >> vehicleLicense;
+    cin >> vehicleLicense; // check??
     clearInput();
-    if (createReservation(sailingID, vehicleLicense, occupants, outFare)) // WHY FARE as arg?!?!?
-      cout << "Reservation successfully created.";
-    else 
-      cout << "Reservation failed, not created.";     
+    if (Vehicle::checkLicenseForReservation(vehicleLicense)) {
+      if (Reservation::createReservation(sailingID, vehicleLicense, occupants, outFare)) // WHY FARE as arg?!?!?
+        cout << "Reservation successfully created.";
+    }
+    else {
+      cout << "Reservation failed, not created.";   
+    }  
   } else if (choice == 2) {
     string vehicleLicense;
     cout << "Enter vehicle license: ";
     cin >> vehicleLicense;
     clearInput();
-    if (cancelReservation(vehicleLicense))
+    if (Reservation::cancelReservation(vehicleLicense))
       cout << "Reservation successfully cancelled.";
     else 
       cout << "Error: reservation not cancelled."
@@ -215,11 +227,7 @@ void printSailing() {
   printSailingReport() // control for 5 more here or there?
 }
 
-int main () {
-  if (!startup()) {
-    cerr << "System startup failed.\n";
-    return 1;
-  }
+bool interface() {
   while (true) {
     displayMainMenu();
     int choice = getChoice();
@@ -233,6 +241,7 @@ int main () {
       default: cout << "Invalid selection. \n";
     }
   }
+  return 1;
 }
 
 

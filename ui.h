@@ -8,7 +8,11 @@
 // Revision History:
 // Rev. 1 - 2025/07/07 - Team 12
 // - Converted to class format with initialization/shutdown
+// Rev. 2 - 2025/07/23 - Team 12
+// - Changed to static
 //*******************************
+#ifndef USERINTERFACE_H
+#define USERINTERFACE_H
 
 class UserInterface {
 public:
@@ -17,63 +21,70 @@ public:
     // Initializes the UserInterface class. Returns true if successful.
     // Precondition:
     // None
-    bool init();
-
-    //------
-    // Description:
-    // Shuts down the UserInterface class and releases resources.
-    // Precondition:
-    // Class must be initialized
-    void shutdown();
+    static bool init();
 
     //------
     // Description:
     // Displays main menu
     // Precondition:
     // None
-    void displayMainMenu();
+    static bool shutdown();
+
+    //------
+    // Description:
+    // Displays main menu
+    // Precondition:
+    // None
+    static void displayMainMenu();
 
     //------
     // Description:
     // Gets input when int is desired
     // Precondition:
     // None
-    void getChoice();
-
+    static void getChoice();    
+    
     //------
     // Description:
     // Displays operations for handeling vessels
     // Precondition:
     // None
-    void chooseVessel();
-
+    static void chooseVessel();    
+    
     //------
     // Description:
     // Displays operations for handeling sailings
     // Precondition:
     // None
-    void chooseSailing();
-
+    static void chooseSailing();    
+    
     //------
     // Description:
     // Displays operations for handeling reservations
     // Precondition:
     // None
-    void chooseReservation();
+    static void chooseReservation();    
 
     //------
     // Description:
     // Displays operations for handeling check-in
     // Precondition:
     // None
-    void checkin();
+    static void checkin();
 
     //------
     // Description:
     // Displays operations for handeling printing of sailing reports
     // Precondition:
     // None
-    void printSailing();
+    static void printSailing();
+
+    //------
+    // Description:
+    // Displays main menu
+    // Precondition:
+    // None
+    static bool interface();
 
 private:
     //------
@@ -81,5 +92,7 @@ private:
     // clears remaining new line characters or spaces from input.
     // Precondition:
     // None
-    void clearInput()
+    static void clearInput();
 };
+
+#endif
