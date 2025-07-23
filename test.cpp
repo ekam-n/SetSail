@@ -2,10 +2,11 @@
 // testVesselFileOps.cpp
 // CMPT 276 - Assignment 4
 // Description: Unit test for vessel file write/read binary operations
-// Version: 1.0
-// Author:
+// Version: 2.0
+// Author: group12
 // History:
 // - 1.0: Initial test created (2025-07-18)
+// - 2.0: Constructor usage → replaced with brace initializer； operator → replaced with vesselsMatch() function（2025-07-23）
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 #include <iostream>
@@ -42,18 +43,17 @@ int main() {
     bool ok1 = readVessel(file, read1);
     bool ok2 = readVessel(file, read2);
 
-    // Step 5: Compare and report
-    if (ok1 && ok2 && read1 == v1 && read2 == v2) {
-        std::cout << "PASS: Vessels written and read correctly.\n";
-    } else {
-        std::cout << "FAIL:\n";
-        if (!ok1 || !ok2)
-            std::cout << "  Read error occurred.\n";
-        if (!(read1 == v1))
-            std::cout << "  First vessel mismatch.\n";
-        if (!(read2 == v2))
-            std::cout << "  Second vessel mismatch.\n";
-    }
+   // Field-by-field comparison
+bool vesselsMatch(const Vessel& a, const Vessel& b) {
+    return std::strncmp(a.id, b.id, 6) == 0 &&
+           a.length == b.length &&
+           a.height == b.height &&
+           a.vehicleCount == b.vehicleCount;
+}
+
+if (ok1 && ok2 && vesselsMatch(read1, v1) && vesselsMatch(read2, v2)) {
+    std::cout << "PASS: Vessels written and read correctly.\n";
+}
 
     // Optional: test EOF
     Vessel dummy;
