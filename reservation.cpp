@@ -45,15 +45,17 @@ void Reservation::shutdown() {
 // Precondition:
 // Reservation must exist
 bool Reservation::cancelReservation(const std::string& sailingID, const std::string& license) {
-    float height;
+    float height = 0.0f;
+    float length = 0.0f;
     std::vector<Reservation> reservations = ReservationIO::getReservationsByLicense(license);
     for (const auto& res : reservations ) {
         if (res.currentSailingID == sailingID ) {
-            height = res.height;
+            height = res.specialVehicleHeight;
+            length = res.specialVehicleLength;
         }
     }
-    if (height > 2.0 ) Sailing::updateSailingForHigh(&sailingID, res.length);
-    else Sailing::updateSailingForLow(&sailingID, res.length);
+    if (height > 2.0 ) Sailing::updateSailingForHigh(&sailingID, length);
+    else Sailing::updateSailingForLow(&sailingID, length);
 
     return ReservationIO::deleteReservation(sailingID, license);
 }
@@ -157,7 +159,7 @@ bool Reservation::createSpecialReservation(
             return false;
         }
         else {
-            Sailing::updateSailingCapacity(&sailingID, height, length);
+            Sailing::updateSailingForHigh(&sailingID, occupants, length);
             fare = length * 3.0;
         }
     } else {
@@ -198,9 +200,7 @@ void Reservation::logArrivals(const std::string& sailingID) {
     for (const auto& res : reservations ) {
         if (res.currentSailingID == sailingID ) {
             std::cout << "Vehicle's fare is:" << res.currentFare << std::endl;
-            return true;
         }
     }
-    return false;
 }
-}
+// can get rid of imo because it doesn't even return a bool what's the point
