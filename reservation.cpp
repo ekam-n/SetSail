@@ -108,12 +108,11 @@ bool Reservation::createReservation(
         } else {
             highCeilingReservation = true;
         }
+    } 
+    if (highCeilingReservation) {
+        Sailing::updateSailingForHigh(&sailingID, occupants); // length assumed to be max of 7 metres
     } else {
-        if (highCeilingReservation) {
-            Sailing::updateSailingForHigh(&sailingID, occupants); // length assumed to be max of 7 metres
-        } else {
-            Sailing::updateSailingForLow(&sailingID, occupants); // length assumed to be max of 7 metres
-        }
+        Sailing::updateSailingForLow(&sailingID, occupants); // length assumed to be max of 7 metres
     }
 
     Reservation res;
@@ -196,11 +195,5 @@ bool Reservation::createSpecialReservation(
 // Precondition:
 // Sailing must exist
 void Reservation::logArrivals(const std::string& sailingID) {
-    std::vector<Reservation> reservations = ReservationIO::getReservationsByLicense(license);
-    for (const auto& res : reservations ) {
-        if (res.currentSailingID == sailingID ) {
-            std::cout << "Vehicle's fare is:" << res.currentFare << std::endl;
-        }
-    }
+    // update # of those on board? can probably do in check in tho
 }
-// can get rid of imo because it doesn't even return a bool what's the point
