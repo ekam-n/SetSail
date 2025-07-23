@@ -2,10 +2,11 @@
 // vessel.h
 // CMPT 276 - Assignment 4
 // Description: Header file for Vessel class. Used for fixed-length binary storage.
-// Version: 1.0
+// Version: 2.0
 // Author: group12
-// History: v2.0
+// History:
 // - 1.0: Initial creation (2025-07-17)
+// - 2.0: 	class → struct; Removed: constructors + operator (2025-07-23)
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 #ifndef VESSEL_H
