@@ -2,9 +2,9 @@
 // vessel_io.cpp
 // CMPT 276 - Assignment 4
 // Description: Implements binary file operations for Vessel records.
-// Version: 1.1
+// Version: 2.0
 // Author: group12
-// History: v2.0
+// History:
 // - 1.0: Initial version (2025-07-17)
 // - 1.1: Fixed file descriptor error and added cross-platform truncation logic (2025-07-18)
 // - 2.0: make sure there are no Vessel(...) constructor calls (2025-07-23)
