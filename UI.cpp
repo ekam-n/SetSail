@@ -258,3 +258,4 @@ bool interface() {
 
 
 
+// random
