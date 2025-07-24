@@ -17,6 +17,7 @@
 
 class Reservation {
     friend class ReservationIO;
+    friend class Sailing;
     
 public:
     //------

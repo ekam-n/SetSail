@@ -1,116 +1,87 @@
-//*******************************
-//*******************************
+//============================================================
 // sailing.h
-// Description:
-// This class handles all sailing operations including creation, deletion,
-// and capacity management for ferry sailings.
-//
-// Revision History:
-// Rev. 1 - 2025/07/07 - Team 12
-// - Converted to class format with private member variables
-//*******************************
+// Version History:
+//   1.1 2025-07-20  Added Record definition with field defaults
+//============================================================
+#ifndef SAILING_H
+#define SAILING_H
 
 #include <string>
+// #include "vessel.h"       // For vessel existence checks
+// #include "reservation.h"  // For reservation-related queries
+#include <cstddef>
 
+// The Sailing Class encapsulates all sailing-related scenarios.
+// All methods are static; no class instance is required.
 class Sailing {
 public:
-    //------
-    // Description:
-    // Initializes the Sailing class. Returns true if successful.
-    // Precondition:
-    // None
-    bool init();
+    // Fixed sizes for C-string fields
+    static const size_t ID_LEN = 32;
+    static const size_t VLEN   = 32;
 
-    //------
-    // Description:
-    // Shuts down the Sailing class and cleans up resources.
-    // Precondition:
-    // Class must be initialized
-    void shutdown();
+    // In-memory representation of a sailing record
+    struct Record {
+        char   sailingID[ID_LEN];   // Primary key, fixed-length C-string
+        char   vessel_ID[VLEN];     // Foreign key, fixed-length C-string
+        float  HRL;                 // High Remaining Length
+        float  LRL;                 // Low Remaining Length
+        int    on_board;            // Current occupant count
 
-    //------
-    // Description:
-    // Adds occupants to a sailing. Returns true if successful.
-    // Precondition:
-    // Sailing must exist
-    bool addOccupants(
-        const std::string& sailingID,  // [in] Sailing ID to update
-        int people,                    // [in] Number of people to add
-        float vehicleLength            // [in] Vehicle length to add
-    );
+        // Default constructor: zero-initialize
+        Record() {
+            std::memset(sailingID, 0, ID_LEN);
+            std::memset(vessel_ID, 0, VLEN);
+            HRL = 0.0f;  LRL = 0.0f;  on_board = 0;
+        }
 
-    //------
-    // Description:
-    // Checks if vessel has associated sailings. Returns true if found.
-    // Precondition:
-    // Vessel must exist
-    bool checkVesselHasSailings(
-        const std::string& vesselName  // [in] Vessel name to check
-    );
+        // Convenience constructor from C-strings
+        Record(const char* sid, const char* vid, float hrl_value, float lrl_value) {
+            std::strncpy(sailingID, sid, ID_LEN);
+            sailingID[ID_LEN - 1] = '\0';
+            std::strncpy(vessel_ID, vid, VLEN);
+            vessel_ID[VLEN - 1] = '\0';
+            HRL = hrl_value;
+            LRL = lrl_value;
+            on_board = 0;
+        }
+    };
 
-    //------
-    // Description:
-    // Creates a new sailing. Returns true if successful.
-    // Precondition:
-    // Valid sailing data
-    bool createSailing(
-        const std::string& sailingID,      // [in] Unique sailing identifier
-        const std::string& vesselName,     // [in] Name of vessel
-        const std::string& departureTerm,  // [in] Departure terminal code
-        const std::string& departureDay,   // [in] Departure day (DD)
-        const std::string& departureTime   // [in] Departure time (HH:MM)
-    );
+    // Initialize the sailing subsystem, opening and resetting its file.
+    static void init();
 
-    //------
-    // Description:
-    // Deletes a sailing. Returns true if successful.
-    // Precondition:
-    // Sailing must exist
-    bool deleteSailing(
-        const std::string& sailingID  // [in] Sailing ID to delete
-    );
+    // Create a new sailing record, prompting user for required fields.
+    static bool createSailing(const std::string& vesselName,
+                            const std::string& departTerm,
+                            const std::string& departDay,
+                            const std::string& departTime);
+    // add arguments, print sailing ID: "sailing successfully created..."
 
-    //------
-    // Description:
-    // Gets people occupant count for reservation. Returns -1 if error.
-    // Precondition:
-    // Sailing must exist
-    int getPeopleOccupantsForReservation(
-        const std::string& sailingID  // [in] Sailing ID to query
-    );
+    // Delete an existing sailing by ID. Throws if not found.
+    static void deleteSailing(const std::string& sailingID);
 
-    //------
-    // Description:
-    // Gets total vehicle length occupied. Returns -1.0 if error.
-    // Precondition:
-    // Sailing must exist
-    float getVehicleOccupants(
-        const std::string& sailingID  // [in] Sailing ID to query
-    );
+    // Check whether a given vessel has any sailings scheduled.
+    static bool checkVesselHasSailings(const std::string& vesselName);
 
-    //------
-    // Description:
-    // Gets vehicle length for reservation. Returns -1.0 if error.
-    // Precondition:
-    // Sailing must exist
-    float getVehicleOccupantsForReservation(
-        const std::string& sailingID  // [in] Sailing ID to query
-    );
+    // Add occupant counts to an existing sailing.
+    static void addOccupants(const std::string& sailingID,
+                             int peopleCount,
+                             int vehicleCount);
 
-    //------
-    // Description:
-    // Prints formatted sailing report to standard output.
-    // Precondition:
-    // System must be initialized
-    void printSailingReport();
+    // Retrieve the number of people currently reserved on a sailing.
+    static int getPeopleOccupantsForReservation(const std::string& sailingID);
+
+    // Retrieve the number of vehicles currently reserved on a sailing.
+    static int getVehicleOccupantsForReservation(const std::string& sailingID);
+
+    // Print a paginated report of all sailings.
+    static void printSailingReport();
+
+    // Cleanly close the sailing subsystem (flush & close file).
+    static void shutdown();
 
 private:
-    std::string currentSailingID;          // Active sailing identifier
-    std::string currentVesselName;         // Associated vessel name
-    std::string currentDepartureTerminal;  // Departure terminal code
-    std::string currentDepartureDay;       // Departure day (DD format)
-    std::string currentDepartureTime;      // Departure time (HH:MM format)
-    float currentHighRemainingLength;      // Remaining high ceiling capacity
-    float currentLowRemainingLength;       // Remaining low ceiling capacity
-    unsigned int currentOnBoardCount;      // Current passenger count
+    // Ensure the given sailingID exists; throws if not.
+    static void validateSailingID(const std::string& sailingID);
 };
+
+#endif // SAILING_H
