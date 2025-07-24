@@ -12,7 +12,7 @@
 
 #include "sailing.h"    // For Sailing interface :contentReference[oaicite:2]{index=2}
 #include "sailing_io.h" // For low‑level I/O
-
+#include "vessel.h"
 #include <iostream>
 #include <stdexcept>
 #include <limits>
@@ -32,35 +32,21 @@ bool Sailing::createSailing(const std::string& vesselName,
     std::string sid, vid;
     float lrl, hrl;
 
-    std::cout << "Enter new Sailing ID: ";
-    std::getline(std::cin, sid);
+    sid = departTerm+"-"+departDay+"-"+departTime;
 
     do {
-        if (!VesselClass::checkVesselExists(vesselName))
+        if (!Vessel::checkVesselForSailing(vesselName))
             std::cout << "Vessel not found. Please re-enter.\n";
         else break;
         break;
     } while (true);
 
-    // std::cout << "Enter Low Remaining Length (LRL): ";
-    // while (!(std::cin >> lrl)) {
-    //     std::cin.clear();
-    //     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    //     std::cout << "Invalid. Re-enter LRL: ";
-    // }
-    lrl = 
-
-    std::cout << "Enter High Remaining Length (HRL): ";
-    while (!(std::cin >> hrl)) {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << "Invalid. Re-enter HRL: ";
-    }
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    Vessel::getLRL(vesselName, lrl);
+    Vessel::getHRL(vesselName, hrl);
 
     Record rec(sid.c_str(), vid.c_str(), hrl, lrl);
     SailingIO::createSailing(rec);
-    std::cout << "Sailing created successfully.\n";
+    std::cout << "Sailing created successfully. The sailing ID is: "+sid+"\n";
 }
 
 void Sailing::validateSailingID(const std::string& sailingID) {

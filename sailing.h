@@ -50,7 +50,7 @@ public:
     static void init();
 
     // Create a new sailing record, prompting user for required fields.
-    static bool Sailing::createSailing(const std::string& vesselName,
+    static bool createSailing(const std::string& vesselName,
                             const std::string& departTerm,
                             const std::string& departDay,
                             const std::string& departTime);

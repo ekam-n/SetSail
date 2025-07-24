@@ -12,15 +12,15 @@ int main() {
 
     // Let’s create two sailings interactively
     std::cout << "=== Create first sailing ===\n";
-    Sailing::createSailing();
+    Sailing::createSailing("Maria", "WIN", "24", "15");
 
-    std::cout << "\n=== Create second sailing ===\n";
-    Sailing::createSailing();
+    // std::cout << "\n=== Create second sailing ===\n";
+    // Sailing::createSailing();
 
-    // Show what we have so far
-    std::cout << "\n=== Current sailings ===\n";
-    Sailing::printSailingReport();
+    // // Show what we have so far
+    // std::cout << "\n=== Current sailings ===\n";
+    // Sailing::printSailingReport();
 
-    Sailing::shutdown();
+    // Sailing::shutdown();
     return 0;
 }
