@@ -63,15 +63,16 @@ public:
     static bool checkVesselHasSailings(const std::string& vesselName);
 
     // Add occupant counts to an existing sailing.
-    static void addOccupants(const std::string& sailingID,
-                             int peopleCount,
-                             int vehicleCount);
+    static void addPeopleOccupants(const std::string& sailingID,
+                             int peopleCount);
 
     // Retrieve the number of people currently reserved on a sailing.
     static int getPeopleOccupantsForReservation(const std::string& sailingID);
 
     // Retrieve the number of vehicles currently reserved on a sailing.
     static int getVehicleOccupantsForReservation(const std::string& sailingID);
+
+    // static bool checkSailingExists(const std::string& sailingID);
 
     // Print a paginated report of all sailings.
     static void printSailingReport();
@@ -81,7 +82,7 @@ public:
 
 private:
     // Ensure the given sailingID exists; throws if not.
-    static void validateSailingID(const std::string& sailingID);
+    static void checkSailingExists(const std::string& sailingID);
 };
 
 #endif // SAILING_H

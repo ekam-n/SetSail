@@ -30,9 +30,17 @@ public:
     static void addPeopleOccupants(const std::string& sailingID, int count);
 
     // addvehicleoccupants
+    static void addVehicleOccupantsHigh(const std::string& sailingID, int length);
+
+    static void addVehicleOccupantsLow(const std::string& sailingID, int length);
 
     /// Return the on_board count for the record with this ID
     static int getPeopleOccupants(const std::string& sailingID);
+
+    static int getVehicleOccupants(const std::string& sailingID);
+
+    // checkSailingExists
+    static bool checkSailingExists(const std::string& sailingID);
 
     /// Print all records in a paginated report (e.g., 5 per page)
     static void printSailingReport();

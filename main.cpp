@@ -25,6 +25,7 @@ int main() {
     // std::cout << "\n=== Current sailings ===\n";
     // Sailing::printSailingReport();
 
-    // Sailing::shutdown();
+    Sailing::shutdown();
+    Vessel::shutdown();
     return 0;
 }

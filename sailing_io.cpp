@@ -124,6 +124,34 @@ void SailingIO::addPeopleOccupants(const std::string& sailingID, int count) {
     }
 }
 
+void SailingIO::addVehicleOccupants(const std::string& sailingID, int count) {
+    // 1) rewind to start
+    reset();
+
+    Record temp;
+    std::streamoff pos;
+
+    // 2) scan until we find the matching sailingID
+    while ((pos = fs.tellg()), fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
+        if (std::string(temp.sailingID) == sailingID) {
+            // 3) bump the vehicle count field
+            temp.vehicles_on_board += count;
+
+            // 4) overwrite the record in‑place
+            fs.clear();                  // clear eof/fail bits
+            fs.seekp(pos, std::ios::beg);
+            fs.write(reinterpret_cast<const char*>(&temp), sizeof temp);
+            fs.flush();
+            return;
+        }
+    }
+
+    // if we get here, no matching sailingID was found
+    std::cerr << "SailingIO::addVehicleOccupants — no record for ID " 
+              << sailingID << "\n";
+}
+
+
 int SailingIO::getPeopleOccupants(const std::string& sailingID) {
     reset();
     Record temp;
@@ -132,6 +160,30 @@ int SailingIO::getPeopleOccupants(const std::string& sailingID) {
             return temp.on_board;
     }
     return -1;
+}
+
+int SailingIO::getVehicleOccupants(const std::string& sailingID) {
+    reset();                        // rewind to file start
+    Record temp;
+    // scan for the matching sailingID
+    while (fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
+        if (std::string(temp.sailingID) == sailingID) {
+            return temp.on_board;   // return occupant count
+        }
+    }
+    return -1;                      // not found
+}
+
+bool SailingIO::checkSailingExists(const std::string& sailingID) {
+    reset();                        // rewind to file start
+    Record temp;
+    // scan for the matching sailingID
+    while (fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
+        if (std::string(temp.sailingID) == sailingID) {
+            return true;
+        }
+    }
+    return false;                   // not found
 }
 
 void SailingIO::printSailingReport() {
