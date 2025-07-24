@@ -123,9 +123,7 @@ void UserInterface::chooseSailing() {
     cout << "Enter time of departure in 24-hour time: ";
     cin >> departTime;
     clearInput();
-    if (Sailing::createSailing(vesselName, departTerm, departDay, departTime)) // REMOVE SAILING ID ARGUMENT + ASKING FOR IT IN CIN!!!!!
-      cout << "Sailing successfully created. The sailing ID is: " //ADD FUNCTION HERE!!!!!!!!!!
-    else 
+    if (!(Sailing::createSailing(vesselName, departTerm, departDay, departTime))) 
       cout << "Sailing ID could not be created\n"
   } else if (choice == 2) {
     string sailingID;
@@ -146,7 +144,7 @@ void UserInterface::chooseSailing() {
   }
 }
 
-// RESERVATIONS ->> CHECK / NOT FINISHED
+// RESERVATIONS
 void chooseReservation() {
   cout << "===== Reservations =====\n"
     << "[1] Create_reservation\n"
@@ -156,8 +154,7 @@ void chooseReservation() {
   if (choice ==1) {
     string sailingID, vehicleLicense, phoneNum;
     int occupants;
-    float fare, height, length;
-    char specialVehicle
+    char specialVehicle;
     cout << "Enter sailing ID of the sailing to be reserved: ";
     cin >> sailingID;
     clearInput();
@@ -165,15 +162,32 @@ void chooseReservation() {
     cin >> occupants;
     clearInput();
     cout << "Enter vehicle license: ";
-    cin >> vehicleLicense; // check??
+    cin >> vehicleLicense; 
     clearInput();
-    if (Vehicle::checkLicenseForReservation(vehicleLicense)) {
-      if (Reservation::createReservation(sailingID, vehicleLicense, occupants, outFare)) // WHY FARE as arg?!?!?
-        cout << "Reservation successfully created.";
+    cout << "Please enter a phone number (###-###-####): ";
+    cin >> phoneNum;
+    clearInput();
+    cout << "Is your vehicle over 2 metres tall and/or longer than 7 metres? [Y/N] ";
+    cin >> specialVehicle;
+    clearInput();
+    if (specialVehicle == "N") {
+      if (Reservation::createReservation(sailingID, vehicleLicense, occupants, phoneNum)) {
+        cout << "Reservation successfully created.\n"
+        return;
+      }
+    } else if (specialVehicle == "Y") {
+      float height, length;
+      cout << "Enter vehicle height in metres (only the value): ";
+      cin >> height;
+      clearInput();
+      cout << "nter vehicle length in metres (only the value): ";
+      cin >> length;
+      clearInput();
+      if (Reservation::createSpecialReservation(sailingID, vehicleLicense, occupants, height, length, phoneNum)) {
+        cout << "Reservation successfully created.\n"
+        return
+      }
     }
-    else {
-      cout << "Reservation failed, not created.";   
-    }  
   } else if (choice == 2) {
     string vehicleLicense;
     cout << "Enter vehicle license: ";
@@ -197,7 +211,7 @@ void checkin() {
     string sailingID;
     cout << "Enter sailing ID of the sailing to be viewed: "; 
     cin >> sailingID;
-    getVehicleOccupantsForReservation(sailingID); // says return 0 in function sailing.cpp
+    Sailing::getVehicleOccupantsForReservation(sailingID); 
     // "end of report" written here or in function?
   } else if (choice == 2) {
     string sailingID;
@@ -205,7 +219,6 @@ void checkin() {
     cin >> sailingID;
     clearInput();
 
-// NOT SURE ABOUT THIS
     string license;
     while (true) {
       cout << "Enter vehicle license (or 0 to return to main menu): ";
@@ -213,9 +226,8 @@ void checkin() {
       clearInput();
       if (license == "0") {
         break;
-      } else {
-        logArrival(license) // reservation.h says parameter is sailing ID -> then prompts need to be given in function itself, not here!
-        cout << "Vehicle’s fare is: $"
+      } else { //check in -> license and sailing ID + loop!
+        checkin(sailingID, license) 
         cout << "Vehicle successfully checked in."
       }
     }
@@ -224,7 +236,7 @@ void checkin() {
 
 // PRINT SAILING REPORT
 void printSailing() {
-  printSailingReport() // control for 5 more here or there?
+  printSailingReport()
 }
 
 bool interface() {
