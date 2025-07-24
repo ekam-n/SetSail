@@ -50,7 +50,11 @@ public:
     static void init();
 
     // Create a new sailing record, prompting user for required fields.
-    static void createSailing();
+    static bool Sailing::createSailing(const std::string& vesselName,
+                            const std::string& departTerm,
+                            const std::string& departDay,
+                            const std::string& departTime);
+    // add arguments, print sailing ID: "sailing successfully created..."
 
     // Delete an existing sailing by ID. Throws if not found.
     static void deleteSailing(const std::string& sailingID);

@@ -18,7 +18,7 @@ public:
     static void reset();
 
     /// Append a new SailingRecord to the end of the file
-    static void createSailing(const Sailing::Record& rec);
+    static bool createSailing(const Sailing::Record& rec);
 
     /// Delete the record matching the given sailing ID
     static void deleteSailing(const std::string& sailingID);
@@ -28,6 +28,8 @@ public:
 
     /// Increment the on_board field for the record with this ID
     static void addPeopleOccupants(const std::string& sailingID, int count);
+
+    // addvehicleoccupants
 
     /// Return the on_board count for the record with this ID
     static int getPeopleOccupants(const std::string& sailingID);

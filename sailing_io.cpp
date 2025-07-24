@@ -39,12 +39,28 @@ void SailingIO::reset() {
     fs.seekg(0, std::ios::beg);
 }
 
-void SailingIO::createSailing(const Record& rec) {
+bool SailingIO::createSailing(const Record& rec) {
+    // clear any stale error bits, position at end
     fs.clear();
     fs.seekp(0, std::ios::end);
-    fs.write(reinterpret_cast<const char*>(&rec), sizeof rec);
+
+    // write the record
+    fs.write(reinterpret_cast<const char*>(&rec), sizeof(rec));
+    if (!fs) {
+        std::cerr << "SailingIO::createSailing — write failed\n";
+        return false;
+    }
+
+    // flush to disk
     fs.flush();
+    if (!fs) {
+        std::cerr << "SailingIO::createSailing — flush failed\n";
+        return false;
+    }
+
+    return true;
 }
+
 
 void SailingIO::deleteSailing(const std::string& sailingID) {
     // Determine file size and record count

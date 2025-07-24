@@ -25,7 +25,10 @@ void Sailing::init() {
     SailingIO::reset();
 }
 
-void Sailing::createSailing() {
+bool Sailing::createSailing(const std::string& vesselName,
+                            const std::string& departTerm,
+                            const std::string& departDay,
+                            const std::string& departTime) {
     std::string sid, vid;
     float lrl, hrl;
 
@@ -33,20 +36,19 @@ void Sailing::createSailing() {
     std::getline(std::cin, sid);
 
     do {
-        std::cout << "Enter Vessel name for sailing: ";
-        std::getline(std::cin, vid);
-        // if (!VesselClass::checkVesselExists(vid))
-        //     std::cout << "Vessel not found. Please re-enter.\n";
-        // else break;
+        if (!VesselClass::checkVesselExists(vesselName))
+            std::cout << "Vessel not found. Please re-enter.\n";
+        else break;
         break;
     } while (true);
 
-    std::cout << "Enter Low Remaining Length (LRL): ";
-    while (!(std::cin >> lrl)) {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << "Invalid. Re-enter LRL: ";
-    }
+    // std::cout << "Enter Low Remaining Length (LRL): ";
+    // while (!(std::cin >> lrl)) {
+    //     std::cin.clear();
+    //     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    //     std::cout << "Invalid. Re-enter LRL: ";
+    // }
+    lrl = 
 
     std::cout << "Enter High Remaining Length (HRL): ";
     while (!(std::cin >> hrl)) {
