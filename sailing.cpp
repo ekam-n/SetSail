@@ -29,7 +29,7 @@ bool Sailing::createSailing(const std::string& vesselName,
                             const std::string& departTerm,
                             const std::string& departDay,
                             const std::string& departTime) {
-    std::string sid, vid;
+    std::string sid;
     float lrl, hrl;
 
     sid = departTerm+"-"+departDay+"-"+departTime;
@@ -38,15 +38,16 @@ bool Sailing::createSailing(const std::string& vesselName,
         if (!Vessel::checkVesselForSailing(vesselName))
             std::cout << "Vessel not found. Please re-enter.\n";
         else break;
-        break;
+        return false;
     } while (true);
 
     Vessel::getLRL(vesselName, lrl);
     Vessel::getHRL(vesselName, hrl);
 
-    Record rec(sid.c_str(), vid.c_str(), hrl, lrl);
+    Record rec(sid.c_str(), vesselName.c_str(), hrl, lrl);
     SailingIO::createSailing(rec);
     std::cout << "Sailing created successfully. The sailing ID is: "+sid+"\n";
+    return true;
 }
 
 void Sailing::validateSailingID(const std::string& sailingID) {

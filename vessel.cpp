@@ -92,9 +92,7 @@ bool Vessel::deleteVessel(const std::string& vesselName)
 
 bool Vessel::checkVesselForSailing(const std::string& vesselName)
 {
-    // TODO: implement actual check via SailingIO.
-    // For now, assume no sailings exist:
-    return true;
+    return VesselIO::checkVesselExists(vesselName.c_str());
 }
 
 bool Vessel::getLRL(const std::string& vesselName, float& outLRL)

@@ -1,5 +1,6 @@
 // main_interactive.cpp
 #include "sailing.h"
+#include "vessel.h"
 #include <iostream>
 #include <cstdio>
 
@@ -9,8 +10,11 @@ int main() {
 
     // Initialize the subsystem
     Sailing::init();
+    Vessel::init();
 
     // Let’s create two sailings interactively
+
+    Vessel::createVessel("Maria", "750", "150", "150");
     std::cout << "=== Create first sailing ===\n";
     Sailing::createSailing("Maria", "WIN", "24", "15");
 
