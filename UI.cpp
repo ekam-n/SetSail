@@ -12,7 +12,7 @@
 #include <iostream>
 #include <string>
 #include <limits>
-#include "main.h"
+#include "main.cpp"
 #include "ui.h"
 #include "vehicle.h"
 #include "reservation.h"
