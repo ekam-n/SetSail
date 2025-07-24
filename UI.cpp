@@ -226,8 +226,8 @@ void checkin() {
       clearInput();
       if (license == "0") {
         break;
-      } else { //check in -> license and sailing ID + loop!
-        checkin(sailingID, license) 
+      } else { 
+        Reservation::checkin(sailingID, license);
         cout << "Vehicle successfully checked in."
       }
     }
