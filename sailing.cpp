@@ -65,11 +65,36 @@ bool Sailing::checkVesselHasSailings(const std::string& vesselName) {
     return SailingIO::checkSailingsForVessel(vesselName);
 }
 
-void Sailing::addPeopleOccupants(const std::string& sailingID,
-                                int peopleCount) {
-    checkSailingExists(sailingID);
-    SailingIO::addPeopleOccupants(sailingID, peopleCount);
-    // SailingIO::addVehicleOccupants(sailingID, vehicleCount);
+bool Sailing::checkSailingVehicleCapacity(const std::string& sailingID) {
+    return SailingIO::checkSailingVehicleCapacity(sailingID);
+}
+
+bool Sailing::checkSailingPeopleCapacity(const std::string& sailingID,
+                                          unsigned int occupants)
+{
+    return SailingIO::checkSailingPeopleCapacity(sailingID, occupants);
+}
+
+bool Sailing::getHighRemLaneLength(const std::string& sailingID, float length) {
+    return SailingIO::getHighRemLaneLength(sailingID, length);
+}
+
+bool Sailing::getLowRemLaneLength(const std::string& sailingID, float length) {
+    return SailingIO::getLowRemLaneLength(sailingID, length);
+}
+
+void Sailing::updateSailingForHigh(const std::string& sailingID,
+                                   unsigned int occupants,
+                                   float length)
+{
+    SailingIO::updateSailingForHigh(sailingID, occupants, length);
+}
+
+void Sailing::updateSailingForLow(const std::string& sailingID,
+                                  unsigned int occupants,
+                                  float length)
+{
+    SailingIO::updateSailingForLow(sailingID, occupants, length);
 }
 
 int Sailing::getPeopleOccupantsForReservation(const std::string& sailingID) {

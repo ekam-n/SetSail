@@ -124,33 +124,110 @@ void SailingIO::addPeopleOccupants(const std::string& sailingID, int count) {
     }
 }
 
-void SailingIO::addVehicleOccupants(const std::string& sailingID, int count) {
-    // 1) rewind to start
-    reset();
 
+// — checkSailingVehicleCapacity —
+// returns true if *either* lane has any room left
+bool SailingIO::checkSailingVehicleCapacity(const std::string& sailingID) {
+    reset();
+    Record temp;
+    while (fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
+        if (std::string(temp.sailingID) == sailingID) {
+            // if either remaining‑high or remaining‑low length is > 0
+            return (temp.HRL > 0.0f) || (temp.LRL > 0.0f);
+        }
+    }
+    return false;
+}
+
+// — checkSailingPeopleCapacity —
+// returns true if we can add `occupants` more without exceeding vessel's passenger cap
+bool SailingIO::checkSailingPeopleCapacity(const std::string& sailingID,
+                                           unsigned int occupants)
+{
+    reset();
+    Record temp;
+    while (fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
+        if (std::string(temp.sailingID) == sailingID) {
+            // read vessel's max passenger capacity
+            VesselRecord vRec;
+            if (!VesselIO::readVessel(temp.vessel_ID, vRec))
+                return false;
+            return (static_cast<unsigned>(temp.on_board) + occupants)
+                   <= static_cast<unsigned>(vRec.maxPassengers);
+        }
+    }
+    return false;
+}
+
+// — getHighRemLaneLength —
+// returns true if the high‑ceiling lane has at least `length` metres free
+bool SailingIO::getHighRemLaneLength(const std::string& sailingID, float length) {
+    reset();
+    Record temp;
+    while (fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
+        if (std::string(temp.sailingID) == sailingID) {
+            return temp.HRL >= length;
+        }
+    }
+    return false;
+}
+
+// — getLowRemLaneLength —
+// returns true if the low‑ceiling lane has at least `length` metres free
+bool SailingIO::getLowRemLaneLength(const std::string& sailingID, float length) {
+    reset();
+    Record temp;
+    while (fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
+        if (std::string(temp.sailingID) == sailingID) {
+            return temp.LRL >= length;
+        }
+    }
+    return false;
+}
+
+// — updateSailingForHigh —
+// subtract `length` metres from HRL and add `occupants` to on_board
+void SailingIO::updateSailingForHigh(const std::string& sailingID,
+                                     unsigned int occupants,
+                                     float length)
+{
+    reset();
     Record temp;
     std::streamoff pos;
-
-    // 2) scan until we find the matching sailingID
     while ((pos = fs.tellg()), fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
         if (std::string(temp.sailingID) == sailingID) {
-            // 3) bump the vehicle count field
-            temp.vehicles_on_board += count;
-
-            // 4) overwrite the record in‑place
-            fs.clear();                  // clear eof/fail bits
+            temp.HRL       -= length;
+            temp.on_board += static_cast<int>(occupants);
+            fs.clear();
             fs.seekp(pos, std::ios::beg);
             fs.write(reinterpret_cast<const char*>(&temp), sizeof temp);
             fs.flush();
             return;
         }
     }
-
-    // if we get here, no matching sailingID was found
-    std::cerr << "SailingIO::addVehicleOccupants — no record for ID " 
-              << sailingID << "\n";
 }
 
+// — updateSailingForLow —
+// subtract `length` metres from LRL and add `occupants` to on_board
+void SailingIO::updateSailingForLow(const std::string& sailingID,
+                                    unsigned int occupants,
+                                    float length)
+{
+    reset();
+    Record temp;
+    std::streamoff pos;
+    while ((pos = fs.tellg()), fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
+        if (std::string(temp.sailingID) == sailingID) {
+            temp.LRL       -= length;
+            temp.on_board += static_cast<int>(occupants);
+            fs.clear();
+            fs.seekp(pos, std::ios::beg);
+            fs.write(reinterpret_cast<const char*>(&temp), sizeof temp);
+            fs.flush();
+            return;
+        }
+    }
+}
 
 int SailingIO::getPeopleOccupants(const std::string& sailingID) {
     reset();
