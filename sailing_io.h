@@ -1,3 +1,4 @@
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //============================================================
 // sailing_io.h
 // Version History:
@@ -29,10 +30,36 @@ public:
     /// Increment the on_board field for the record with this ID
     static void addPeopleOccupants(const std::string& sailingID, int count);
 
-    // addvehicleoccupants
-    static void addVehicleOccupantsHigh(const std::string& sailingID, int length);
+    /// Returns true if there is room for one more vehicle
+    static bool checkSailingVehicleCapacity(const std::string& sailingID);
 
-    static void addVehicleOccupantsLow(const std::string& sailingID, int length);
+    /// Returns true if there is room for `occupants` more people
+    static bool checkSailingPeopleCapacity(const std::string& sailingID,
+                                           unsigned int occupants);
+
+    /// Returns true if high‑ceiling lane has ≥ `length` metres free
+    static bool getHighRemLaneLength(const std::string& sailingID,
+                                     float length);
+
+    /// Returns true if low‑ceiling lane has ≥ `length` metres free
+    static bool getLowRemLaneLength(const std::string& sailingID,
+                                    float length);
+
+    /**
+     * Subtract `length` metres from the high‑ceiling lane and
+     * remove `occupants` from on_board count for the given sailing.
+     */
+    static void updateSailingForHigh(const std::string& sailingID,
+                                     unsigned int occupants,
+                                     float length);
+
+    /**
+     * Subtract `length` metres from the low‑ceiling lane and
+     * remove `occupants` from on_board count for the given sailing.
+     */
+    static void updateSailingForLow(const std::string& sailingID,
+                                    unsigned int occupants,
+                                    float length);
 
     /// Return the on_board count for the record with this ID
     static int getPeopleOccupants(const std::string& sailingID);

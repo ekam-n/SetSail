@@ -1,3 +1,4 @@
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //============================================================
 // sailing.h
 // Version History:
@@ -69,7 +70,23 @@ public:
     // Retrieve the number of vehicles currently reserved on a sailing.
     static int getVehicleOccupantsForReservation(const std::string& sailingID);
 
-    
+    static bool checkSailingVehicleCapacity(const std::string& sailingID); 
+    // which returns true if the vessel capacity can take 1 additional vehicle
+
+    static bool checkSailingPeopleCapacity(const std::string& sailingID, unsigned int occupants); 
+    // which returns true if the vessel people capacity can take on x number of occupants
+
+    static bool getHighRemLaneLength(const std::string& sailingID, float length); 
+    // which returns true if the high ceiling lane length has room for x metres in length
+
+    static bool getLowRemLaneLength(const std::string& sailingID, float length); 
+    // which returns true if the low ceiling lane length has room for x metres in length
+
+    static void updateSailingForHigh(const std::string& sailingID, unsigned int occupants, float length); 
+    // which returns nothing, just updates sailing records by subtracting x metres from high lane length and subtracing x occupants from capacity
+
+    static void updateSailingForLow(const std::string& sailingID, unsigned int occupants, float length); 
+    // which returns nothing, just updates sailing records by subtracting x metres from low lane length and subtracing x occupants from capacity
 
     // Print a paginated report of all sailings.
     static void printSailingReport();
