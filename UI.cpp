@@ -1,6 +1,6 @@
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //*******************************
-// main.cpp
+// ui.cpp
 // Description:
 // This module serves as the entry point for the ferry reservation system.
 // It handles the main menu and orchestrates the startup/shutdown of the system.
