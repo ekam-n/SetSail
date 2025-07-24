@@ -15,7 +15,7 @@
 #include "vessel.h"
 #include "sailing.h"
 #include "reservation.h"
-#inlcude "vehicle.h"
+#include "vehicle.h"
 
 
 void startup() {
@@ -23,7 +23,7 @@ void startup() {
     Vessel::init();
     Sailing::init();
     Reservation::init();
-    Vehicle::init()
+    Vehicle::init();
 }
 
 void shutdown() {
