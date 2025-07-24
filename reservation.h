@@ -17,8 +17,9 @@
 
 class Reservation {
     friend class ReservationIO;
-    friend class Sailing;
-    
+    friend class SailingIO;
+    friend class VehicleIO;
+
 public:
     //------
     // Description:
@@ -46,23 +47,14 @@ public:
 
     //------
     // Description:
-    // Checks in a vehicle for a reservation. Returns true if successful.
-    // Precondition:
-    // Reservation must exist
-    static bool checkIn(
-        const std::string& sailingID,  // [in] Sailing ID of reservation
-        const std::string& license     // [in] Vehicle license of reservation
-    );
-
-    //------
-    // Description:
     // Creates a new reservation. Returns true if successful.
     // Precondition:
     // Valid reservation data
     static bool createReservation(
         const std::string& sailingID,    // [in] Associated sailing ID
         const std::string& vehicleLicense, // [in] Vehicle license plate
-        unsigned int occupants           // [in] Number of people in vehicle
+        unsigned int occupants,           // [in] Number of people in vehicle
+        const std::string phoneNumber     // [in] Phone Number for reservation
     );
 
     //------
@@ -74,6 +66,7 @@ public:
         const std::string& sailingID,    // [in] Associated sailing ID
         const std::string& vehicleLicense, // [in] Vehicle license plate
         unsigned int occupants,          // [in] Number of people in vehicle
+        const std::string phoneNumber,     // [in] Phone Number for reservation
         float height,                    // [in] Vehicle height in meters
         float length                     // [in] Vehicle length in meters
     );
@@ -83,8 +76,9 @@ public:
     // Logs vehicle arrivals for a specific sailing.
     // Precondition:
     // Sailing must exist
-    static void logArrivals(
-        const std::string& sailingID  // [in] Sailing ID to log arrivals for
+    static bool logArrivals(
+        const std::string& sailingID,  // [in] Sailing ID of reservation
+        const std::string& license     // [in] Vehicle license of reservation
     );
 
 private:
@@ -92,6 +86,7 @@ private:
     std::string currentVehicleLicense; // Current vehicle license being processed
     float currentFare;                 // Current fare amount
     unsigned int currentOccupants;     // Current number of occupants
+    std::string phoneNumber;     // [in] Phone Number for reservation
     float specialVehicleHeight;        // Height for special vehicles
     float specialVehicleLength;       // Length for special vehicles
 };

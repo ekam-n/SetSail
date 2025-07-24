@@ -68,12 +68,13 @@ bool Reservation::cancelReservation(const std::string& sailingID, const std::str
 bool Reservation::createReservation(
     const std::string& sailingID,    // [in] Associated sailing ID
     const std::string& vehicleLicense, // [in] Vehicle license plate
-    unsigned int occupants           // [in] Number of people in vehicle
+    unsigned int occupants,           // [in] Number of people in vehicle
+    const std::string phoneNumber     // [in] Phone Number for reservation
 ) {
 
     bool highCeilingReservation = false; // true = high, false = low
 
-    if (!Sailing::validateSailingID(&sailingID)) {
+    if (!Sailing::checkSailingExists(&sailingID)) {
         return false;
     }
 
@@ -118,12 +119,14 @@ bool Reservation::createSpecialReservation(
     const std::string& sailingID,    // [in] Associated sailing ID
     const std::string& vehicleLicense, // [in] Vehicle license plate
     unsigned int occupants,          // [in] Number of people in vehicle
+    const std::string phoneNumber,     // [in] Phone Number for reservation
     float height,                    // [in] Vehicle height in meters
     float length                     // [in] Vehicle length in meters
 ) {
     bool highCeilingReservation = false; // true = high, false = low
+    float fare = 0.0f;
 
-    if (!Sailing::validateSailingID(&sailingID)) {
+    if (!Sailing::checkSailingExists(&sailingID)) {
         return false;
     }
 
@@ -133,6 +136,13 @@ bool Reservation::createSpecialReservation(
 
     if (!Sailing::checkSailingPeopleCapacity(&sailingID, occupants)) {
         return false;
+    }
+
+    if (!VehicleIO::checkVehicleExists(vehicleLicense)) {
+        if ( height > 2.0 || length > 7.0 ) 
+            Vehicle::createSpecialVehicleForReservation(vehicleLicense, phoneNumber, height, length);
+        else
+            Vehicle::createVehicleForReservation(vehicleLicense, phoneNumber);
     }
 
     if ( height > 2.0 ) {

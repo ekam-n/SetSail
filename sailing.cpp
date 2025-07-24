@@ -12,7 +12,7 @@
 
 #include "sailing.h"    // For Sailing interface :contentReference[oaicite:2]{index=2}
 #include "sailing_io.h" // For low‑level I/O
-
+#include "vessel.h"
 #include <iostream>
 #include <stdexcept>
 #include <limits>
@@ -25,49 +25,40 @@ void Sailing::init() {
     SailingIO::reset();
 }
 
-void Sailing::createSailing() {
-    std::string sid, vid;
+bool Sailing::createSailing(const std::string& vesselName,
+                            const std::string& departTerm,
+                            const std::string& departDay,
+                            const std::string& departTime) {
+    std::string sid;
     float lrl, hrl;
 
-    std::cout << "Enter new Sailing ID: ";
-    std::getline(std::cin, sid);
+    sid = departTerm+"-"+departDay+"-"+departTime;
 
     do {
-        std::cout << "Enter Vessel name for sailing: ";
-        std::getline(std::cin, vid);
-        // if (!VesselClass::checkVesselExists(vid))
-        //     std::cout << "Vessel not found. Please re-enter.\n";
-        // else break;
-        break;
+        if (!Vessel::checkVesselForSailing(vesselName))
+            std::cout << "Vessel not found. Please re-enter.\n";
+        else break;
+        return false;
     } while (true);
 
-    std::cout << "Enter Low Remaining Length (LRL): ";
-    while (!(std::cin >> lrl)) {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << "Invalid. Re-enter LRL: ";
-    }
+    Vessel::getLRL(vesselName, lrl);
+    Vessel::getHRL(vesselName, hrl);
 
-    std::cout << "Enter High Remaining Length (HRL): ";
-    while (!(std::cin >> hrl)) {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << "Invalid. Re-enter HRL: ";
-    }
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-    Record rec(sid.c_str(), vid.c_str(), hrl, lrl);
+    Record rec(sid.c_str(), vesselName.c_str(), hrl, lrl);
     SailingIO::createSailing(rec);
-    std::cout << "Sailing created successfully.\n";
+    std::cout << "Sailing created successfully. The sailing ID is: "+sid+"\n";
+    return true;
 }
 
-void Sailing::validateSailingID(const std::string& sailingID) {
+bool Sailing::checkSailingExists(const std::string& sailingID) {
     if (SailingIO::getPeopleOccupants(sailingID) < 0)
         throw std::runtime_error("Sailing ID not found: " + sailingID);
+        return false;
+    return true;
 }
 
 void Sailing::deleteSailing(const std::string& sailingID) {
-    validateSailingID(sailingID);
+    checkSailingExists(sailingID);
     SailingIO::deleteSailing(sailingID);
     std::cout << "Sailing deleted successfully.\n";
 }
@@ -79,12 +70,12 @@ bool Sailing::checkVesselHasSailings(const std::string& vesselName) {
 void Sailing::addOccupants(const std::string& sailingID,
                                 int peopleCount,
                                 int /*vehicleCount*/) {
-    validateSailingID(sailingID);
+    checkSailingExists(sailingID);
     SailingIO::addPeopleOccupants(sailingID, peopleCount);
 }
 
 int Sailing::getPeopleOccupantsForReservation(const std::string& sailingID) {
-    validateSailingID(sailingID);
+    checkSailingExists(sailingID);
     return SailingIO::getPeopleOccupants(sailingID);
 }
 

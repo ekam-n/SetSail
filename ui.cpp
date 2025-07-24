@@ -172,7 +172,7 @@ void chooseReservation() {
     clearInput();
     if (specialVehicle == "N") {
       if (Reservation::createReservation(sailingID, vehicleLicense, occupants, phoneNum)) {
-        cout << "Reservation successfully created.\n"
+        cout << "Reservation successfully created.\n";
         return;
       }
     } else if (specialVehicle == "Y") {
@@ -180,12 +180,12 @@ void chooseReservation() {
       cout << "Enter vehicle height in metres (only the value): ";
       cin >> height;
       clearInput();
-      cout << "nter vehicle length in metres (only the value): ";
+      cout << "Enter vehicle length in metres (only the value): ";
       cin >> length;
       clearInput();
       if (Reservation::createSpecialReservation(sailingID, vehicleLicense, occupants, height, length, phoneNum)) {
-        cout << "Reservation successfully created.\n"
-        return
+        cout << "Reservation successfully created.\n";
+        return;
       }
     }
   } else if (choice == 2) {

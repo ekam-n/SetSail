@@ -81,7 +81,7 @@ public:
 
 private:
     // Ensure the given sailingID exists; throws if not.
-    static void validateSailingID(const std::string& sailingID);
+    static bool checkSailingExists(const std::string& sailingID);
 };
 
 #endif // SAILING_H
