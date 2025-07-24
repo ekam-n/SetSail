@@ -62,29 +62,12 @@ bool Reservation::cancelReservation(const std::string& sailingID, const std::str
 
 //------
 // Description:
-// Checks in a vehicle for a reservation. Returns true if successful.
-// Precondition:
-// Reservation must exist
-bool Reservation::checkIn(const std::string& sailingID,  const std::string& license) {
-    std::vector<Reservation> reservations = ReservationIO::getReservationsByLicense(license);
-    for (const auto& res : reservations ) {
-        if (res.currentSailingID == sailingID ) {
-            std::cout << "Vehicle's fare is:" << res.currentFare << std::endl;
-            return true;
-        }
-    }
-    return false;
-}
-
-//------
-// Description:
 // Creates a new reservation. Returns true if successful.
 // Precondition:
 // Valid reservation data
 bool Reservation::createReservation(
     const std::string& sailingID,    // [in] Associated sailing ID
     const std::string& vehicleLicense, // [in] Vehicle license plate
-    float fare,                      // [in] Calculated fare amount
     unsigned int occupants           // [in] Number of people in vehicle
 ) {
 
@@ -134,7 +117,6 @@ bool Reservation::createReservation(
 bool Reservation::createSpecialReservation(
     const std::string& sailingID,    // [in] Associated sailing ID
     const std::string& vehicleLicense, // [in] Vehicle license plate
-    float fare,                      // [in] Calculated fare amount
     unsigned int occupants,          // [in] Number of people in vehicle
     float height,                    // [in] Vehicle height in meters
     float length                     // [in] Vehicle length in meters
@@ -191,9 +173,16 @@ bool Reservation::createSpecialReservation(
 
 //------
 // Description:
-// Logs vehicle arrivals for a specific sailing.
+// Checks in a vehicle for a reservation. Returns true if successful.
 // Precondition:
-// Sailing must exist
-void Reservation::logArrivals(const std::string& sailingID) {
-    // update # of those on board? can probably do in check in tho
+// Reservation must exist
+bool Reservation::logArrrivals(const std::string& sailingID,  const std::string& license) {
+    std::vector<Reservation> reservations = ReservationIO::getReservationsByLicense(license);
+    for (const auto& res : reservations ) {
+        if (res.currentSailingID == sailingID ) {
+            std::cout << "Vehicle's fare is:" << res.currentFare << std::endl;
+            return true;
+        }
+    }
+    return false;
 }

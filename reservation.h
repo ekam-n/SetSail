@@ -61,7 +61,6 @@ public:
     static bool createReservation(
         const std::string& sailingID,    // [in] Associated sailing ID
         const std::string& vehicleLicense, // [in] Vehicle license plate
-        float fare,                      // [in] Calculated fare amount
         unsigned int occupants           // [in] Number of people in vehicle
     );
 
@@ -73,7 +72,6 @@ public:
     static bool createSpecialReservation(
         const std::string& sailingID,    // [in] Associated sailing ID
         const std::string& vehicleLicense, // [in] Vehicle license plate
-        float fare,                      // [in] Calculated fare amount
         unsigned int occupants,          // [in] Number of people in vehicle
         float height,                    // [in] Vehicle height in meters
         float length                     // [in] Vehicle length in meters
