@@ -21,7 +21,7 @@ public:
     // Initializes the UserInterface class. Returns true if successful.
     // Precondition:
     // None
-    static bool init();
+    static bool startup();
 
     //------
     // Description:
@@ -42,7 +42,7 @@ public:
     // Gets input when int is desired
     // Precondition:
     // None
-    static void getChoice();    
+    static int getChoice();    
     
     //------
     // Description:
@@ -86,13 +86,14 @@ public:
     // None
     static bool interface();
 
-private:
     //------
     // Description:
     // clears remaining new line characters or spaces from input.
     // Precondition:
     // None
     static void clearInput();
+
+private:
 };
 
 #endif

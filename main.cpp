@@ -17,29 +17,13 @@
 #include "reservation.h"
 #include "vehicle.h"
 
-
-void startup() {
-    UserInterface::init();
-    Vessel::init();
-    Sailing::init();
-    Reservation::init();
-    Vehicle::init();
-}
-
-void shutdown() {
-  Vessel::shutdown();
-  Sailing::shutdown();
-  Reservation::shutdown();
-  Vehicle::shutdown();
-}
-
 //------
 // Description:
 // Main calls UI and handles startup and shutdown functions
 int main() {
-  startup();
+  UserInterface::startup();
   UserInterface::interface(); 
-  shutdown();
+  UserInterface::shutdown();
   return 0;
 }
 

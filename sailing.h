@@ -58,7 +58,7 @@ public:
     // add arguments, print sailing ID: "sailing successfully created..."
 
     // Delete an existing sailing by ID. Throws if not found.
-    static void deleteSailing(const std::string& sailingID);
+    static bool deleteSailing(const std::string& sailingID);
 
     // Check whether a given vessel has any sailings scheduled.
     static bool checkVesselHasSailings(const std::string& vesselName);
@@ -94,9 +94,10 @@ public:
     // Cleanly close the sailing subsystem (flush & close file).
     static void shutdown();
 
-private:
     // Ensure the given sailingID exists; throws if not.
-    static void checkSailingExists(const std::string& sailingID);
+    static bool checkSailingExists(const std::string& sailingID);
+
+private:
 };
 
 #endif // SAILING_H

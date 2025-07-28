@@ -19,9 +19,9 @@ void Vessel::shutdown() {
 }
 
 bool Vessel::createVessel(const std::string& vesselName,
-                          const std::string& capacity,
-                          const std::string& highLaneLength,
-                          const std::string& lowLaneLength)
+                          const int capacity,
+                          const float highLaneLength,
+                          const float lowLaneLength)
 {
     // prevent duplicates
     if (VesselIO::checkVesselExists(vesselName.c_str())) {
@@ -29,30 +29,21 @@ bool Vessel::createVessel(const std::string& vesselName,
         return false;
     }
 
-    // parse capacity
-    int cap = 0;
-    try {
-        cap = std::stoi(capacity);
-    } catch (...) {
-        std::cerr << "Error: Invalid capacity: '" << capacity << "'\n";
+    // validate capacity
+    if (capacity <= 0) {
+        std::cerr << "Error: Invalid capacity: " << capacity << "\n";
         return false;
     }
 
-    // parse high‑ceiling lane length
-    float hll = 0.0f;
-    try {
-        hll = std::stof(highLaneLength);
-    } catch (...) {
-        std::cerr << "Error: Invalid highLaneLength: '" << highLaneLength << "'\n";
+    // validate high-ceiling lane length
+    if (highLaneLength <= 0.0f) {
+        std::cerr << "Error: Invalid highLaneLength: " << highLaneLength << "\n";
         return false;
     }
 
-    // parse low‑ceiling lane length
-    float lll = 0.0f;
-    try {
-        lll = std::stof(lowLaneLength);
-    } catch (...) {
-        std::cerr << "Error: Invalid lowLaneLength: '" << lowLaneLength << "'\n";
+    // validate low-ceiling lane length
+    if (lowLaneLength <= 0.0f) {
+        std::cerr << "Error: Invalid lowLaneLength: " << lowLaneLength << "\n";
         return false;
     }
 
@@ -60,9 +51,9 @@ bool Vessel::createVessel(const std::string& vesselName,
     VesselRecord rec;
     std::strncpy(rec.vesselName, vesselName.c_str(), sizeof(rec.vesselName));
     rec.vesselName[sizeof(rec.vesselName)-1] = '\0';
-    rec.maxPassengers   = cap;
-    rec.highLaneLength  = hll;
-    rec.lowLaneLength   = lll;
+    rec.maxPassengers   = capacity;  // Directly use the parameter
+    rec.highLaneLength  = highLaneLength;  // Directly use the parameter
+    rec.lowLaneLength   = lowLaneLength;  // Directly use the parameter
 
     // persist
     if (!VesselIO::createVessel(rec)) {

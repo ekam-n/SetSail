@@ -12,6 +12,8 @@
 
 #include "sailing_io.h"            // For class SailingIO interface :contentReference[oaicite:0]{index=0}
 #include "sailing.h"               // For SailingClass::Record :contentReference[oaicite:1]{index=1}
+#include "vessel.h"
+#include "vessel_io.h"
 
 #include <fstream>
 #include <iostream>

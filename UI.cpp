@@ -12,7 +12,6 @@
 #include <iostream>
 #include <string>
 #include <limits>
-#include "main.cpp"
 #include "ui.h"
 #include "vehicle.h"
 #include "reservation.h"
@@ -24,12 +23,19 @@ void UserInterface::clearInput() {
   cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-bool UserInterface::init() {
-  return true; // bool or void?
+bool UserInterface::startup() {
+  Vessel::init();
+  Sailing::init();
+  Reservation::init();
+  Vehicle::init();
+  return true;
 }
 
 bool UserInterface::shutdown() {
-  shutdown()
+  Sailing::shutdown();
+  Reservation::shutdown();
+  Vehicle::shutdown();
+  Vessel::shutdown();
   return true;
 }
 
@@ -79,7 +85,7 @@ void UserInterface::chooseVessel() {
     string vesselID;
     cin >> vesselID;
     clearInput();
-    if (Vessel::createVessel(vesselID, hcll, lcll, passNum))
+    if (Vessel::createVessel(vesselID, passNum, hcll, lcll))
       cout << "Vessel successfully created.\n";
     else 
       cout << "Vessel creation failed, name may already exist.\n";
@@ -94,10 +100,11 @@ void UserInterface::chooseVessel() {
     if (decision == 'N') {
       cout << "Vessel not deleted";
     } else if (decision == 'Y') {
-      if Vessel::deleteVessel(vesselID) 
+      if (Vessel::deleteVessel(vesselID)) {
         cout << "Vessel successfully deleted.\n";
-      else 
+      } else {
         cout << "Vessel not found.\n";
+      }
     }
   }
 }
@@ -124,7 +131,7 @@ void UserInterface::chooseSailing() {
     cin >> departTime;
     clearInput();
     if (!(Sailing::createSailing(vesselName, departTerm, departDay, departTime))) 
-      cout << "Sailing ID could not be created\n"
+      cout << "Sailing ID could not be created\n";
   } else if (choice == 2) {
     string sailingID;
     cout << "Enter sailing ID of sailing to be deleted: ";
@@ -136,77 +143,83 @@ void UserInterface::chooseSailing() {
     if (decision == 'N') {
       cout << "Sailing not deleted";
     } else if (decision == 'Y') {
-      if Sailing::deleteSailing(sailingID) 
+      if (Sailing::deleteSailing(sailingID)) {
         cout << "Sailing successfully deleted.\n";
-      else 
+      } else {
         cout << "Sailing not found or may have current reservations.\n";
+      }
     }
   }
 }
 
 // RESERVATIONS
-void chooseReservation() {
+void UserInterface::chooseReservation() {
   cout << "===== Reservations =====\n"
     << "[1] Create_reservation\n"
     << "[2] Cancel_reservation\n";
   cout << "Enter selection: ";
-  int choice = getChoice();
+  int choice = UserInterface::getChoice();
   if (choice ==1) {
     string sailingID, vehicleLicense, phoneNum;
     int occupants;
     char specialVehicle;
     cout << "Enter sailing ID of the sailing to be reserved: ";
     cin >> sailingID;
-    clearInput();
+    UserInterface::clearInput();
     cout << "Enter number of vehicle on board: ";
     cin >> occupants;
-    clearInput();
+    UserInterface::clearInput();
     cout << "Enter vehicle license: ";
     cin >> vehicleLicense; 
-    clearInput();
+    UserInterface::clearInput();
     cout << "Please enter a phone number (###-###-####): ";
     cin >> phoneNum;
-    clearInput();
+    UserInterface::clearInput();
     cout << "Is your vehicle over 2 metres tall and/or longer than 7 metres? [Y/N] ";
     cin >> specialVehicle;
-    clearInput();
-    if (specialVehicle == "N") {
+    UserInterface::clearInput();
+    if (&specialVehicle == "N") {
       if (Reservation::createReservation(sailingID, vehicleLicense, occupants, phoneNum)) {
-        cout << "Reservation successfully created.\n"
+        cout << "Reservation successfully created.\n";
         return;
       }
-    } else if (specialVehicle == "Y") {
+    } else if (&specialVehicle == "Y") {
       float height, length;
       cout << "Enter vehicle height in metres (only the value): ";
       cin >> height;
-      clearInput();
+      UserInterface::clearInput();
       cout << "Enter vehicle length in metres (only the value): ";
       cin >> length;
-      clearInput();
-      if (Reservation::createSpecialReservation(sailingID, vehicleLicense, occupants, height, length, phoneNum)) {
-        cout << "Reservation successfully created.\n"
+      UserInterface::clearInput();
+      if (Reservation::createSpecialReservation(sailingID, vehicleLicense, occupants, phoneNum, height, length)) {
+        cout << "Reservation successfully created.\n";
         return;
       }
     }
   } else if (choice == 2) {
     string vehicleLicense;
-    cout << "Enter vehicle license: ";
+    string sailingID;
+    cout << "Enter vehicle license: " << endl;
     cin >> vehicleLicense;
-    clearInput();
-    if (Reservation::cancelReservation(vehicleLicense))
+    UserInterface::clearInput();
+    cout << "Enter the sailing ID: " << endl;
+    cin >> sailingID;
+    UserInterface::clearInput();
+    if (Reservation::cancelReservation(sailingID, vehicleLicense)) {
       cout << "Reservation successfully cancelled.";
-    else 
-      cout << "Error: reservation not cancelled."
+    } else {
+      cout << "Error: reservation not cancelled.";
+    }
   }
 }
 
 // CHECK-IN
-void checkin() {
+void UserInterface::checkin() {
   cout << "===== Check-In =====\n"
   << "[1] Vehicles_on_board\n"
   << "[2] Log_arrivals\n";
   cout << "Enter selection: ";
-  int choice = getChoice();
+  int choice = UserInterface::getChoice();
   if (choice == 1) {
     string sailingID;
     cout << "Enter sailing ID of the sailing to be viewed: "; 
@@ -217,35 +230,35 @@ void checkin() {
     string sailingID;
     cout << "Enter sailing ID of the sailing to be reserved: ";
     cin >> sailingID;
-    clearInput();
+    UserInterface::clearInput();
 
     string license;
     while (true) {
       cout << "Enter vehicle license (or 0 to return to main menu): ";
       cin >> license;
-      clearInput();
+      UserInterface::clearInput();
       if (license == "0") {
         break;
       } else { 
-        Reservation::checkin(sailingID, license);
-        cout << "Vehicle successfully checked in."
+        Reservation::logArrivals(sailingID, license);
+        cout << "Vehicle successfully checked in.";
       }
     }
   }
 }
 
 // PRINT SAILING REPORT
-void printSailing() {
-  printSailingReport()
+void UserInterface::printSailing() {
+  Sailing::printSailingReport();
 }
 
-bool interface() {
+bool UserInterface::interface() {
   while (true) {
-    displayMainMenu();
-    int choice = getChoice();
+    UserInterface::displayMainMenu();
+    int choice = UserInterface::getChoice();
     switch (choice) {
-      case 1: chooseVessel(); break;
-      case 2: chooseSailing(); break;
+      case 1: UserInterface::chooseVessel(); break;
+      case 2: UserInterface::chooseSailing(); break;
       case 3: chooseReservation(); break;
       case 4: checkin(); break;
       case 5: printSailing(); break;

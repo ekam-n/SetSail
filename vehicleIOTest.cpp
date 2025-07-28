@@ -22,7 +22,7 @@
 //------
 // Description:
 // Main test driver function
-int main() {
+int vehicleIOTest() {
     VehicleIO vehicleIO;
     Vehicle testVehicle;
     

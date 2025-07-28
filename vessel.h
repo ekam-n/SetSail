@@ -23,9 +23,9 @@ public:
      * @return true if creation succeeded.
      */
     static bool createVessel(const std::string& vesselName,
-                             const std::string& capacity,
-                             const std::string& highLaneLength,
-                             const std::string& lowLaneLength);
+                             const int capacity,
+                             const float highLaneLength,
+                             const float lowLaneLength);
 
     /**
      * Delete an existing vessel.

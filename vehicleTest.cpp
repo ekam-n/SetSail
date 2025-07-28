@@ -19,7 +19,7 @@
 #include <cassert>
 #include "vehicle.h"
 
-int main() {
+int vehicleTest() {
     std::cout << "Starting Vehicle class unit test...\n";
 
     // Test 1: Initialization

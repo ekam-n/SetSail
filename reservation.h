@@ -66,7 +66,7 @@ public:
         const std::string& sailingID,    // [in] Associated sailing ID
         const std::string& vehicleLicense, // [in] Vehicle license plate
         unsigned int occupants,          // [in] Number of people in vehicle
-        const std::string phoneNumber,     // [in] Phone Number for reservation
+        const std::string& phoneNumber,     // [in] Phone Number for reservation
         float height,                    // [in] Vehicle height in meters
         float length                     // [in] Vehicle length in meters
     );

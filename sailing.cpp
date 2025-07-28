@@ -55,10 +55,10 @@ bool Sailing::createSailing(const std::string& vesselName,
 //         throw std::runtime_error("Sailing ID not found: " + sailingID);
 // }
 
-void Sailing::deleteSailing(const std::string& sailingID) {
+bool Sailing::deleteSailing(const std::string& sailingID) {
     checkSailingExists(sailingID);
     SailingIO::deleteSailing(sailingID);
-    std::cout << "Sailing deleted successfully.\n";
+    return true;
 }
 
 bool Sailing::checkVesselHasSailings(const std::string& vesselName) {
@@ -106,7 +106,7 @@ int Sailing::getVehicleOccupantsForReservation(const std::string& sailingID) {
     return SailingIO::getVehicleOccupants(sailingID);
 }
 
-bool checkSailingExists(const std::string& sailingID) {
+bool Sailing::checkSailingExists(const std::string& sailingID) {
 
     return SailingIO::checkSailingExists(sailingID);
 }
