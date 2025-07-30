@@ -118,3 +118,7 @@ void Sailing::printSailingReport() {
 void Sailing::shutdown() {
     SailingIO::close();
 }
+
+void Sailing::printVehicleReport(const std::string& sailingID) {
+    SailingIO::printCheckVehicles(sailingID);
+}

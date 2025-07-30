@@ -294,3 +294,54 @@ void SailingIO::printSailingReport() {
 void SailingIO::close() {
     fs.close();
 }
+
+void SailingIO::printCheckVehicles(const std::string& sailingID) {
+    if (!checkSailingExists(sailingID)) {
+        std::cout << "Sailing ID " << sailingID << " not found.\n";
+        return;
+    }
+
+    // Get sailing record
+    Record sailingRec;
+    SailingIO::reset();
+    while (fs.read(reinterpret_cast<char*>(&sailingRec), sizeof(sailingRec))) {
+        if (std::string(sailingRec.sailingID) == sailingID) {
+            break;
+        }
+    }
+
+    // Get vessel information
+    VesselRecord vesselRec;
+    if (!VesselIO::readVessel(sailingRec.vessel_ID, vesselRec)) {
+        std::cerr << "Error: Could not read vessel record for " << sailingRec.vessel_ID << "\n";
+        return;
+    }
+
+    // Calculate metrics
+    float totalLaneLength = vesselRec.highLaneLength + vesselRec.lowLaneLength;
+    float usedLaneLength = (vesselRec.highLaneLength - sailingRec.HRL) + 
+                          (vesselRec.lowLaneLength - sailingRec.LRL);
+    float lanePercentFull = (totalLaneLength > 0) ? 
+                          (usedLaneLength / totalLaneLength) * 100 : 0;
+    
+    float peoplePercentFull = (vesselRec.maxPassengers > 0) ?
+                            (static_cast<float>(sailingRec.on_board) / vesselRec.maxPassengers) * 100 : 0;
+
+    // Print report
+    std::cout << "\n===================================================\n";
+    std::cout << "          DETAILED REPORT FOR SAILING " << sailingID << "\n";
+    std::cout << "===================================================\n";
+    std::cout << std::left << std::setw(25) << "Sailing ID:" << sailingRec.sailingID << "\n";
+    std::cout << std::left << std::setw(25) << "Vessel Name:" << sailingRec.vessel_ID << "\n";
+    std::cout << std::left << std::setw(25) << "Low Remaining Length:" 
+              << std::fixed << std::setprecision(2) << sailingRec.LRL << " meters\n";
+    std::cout << std::left << std::setw(25) << "High Remaining Length:" 
+              << sailingRec.HRL << " meters\n";
+    std::cout << std::left << std::setw(25) << "Vehicles On Board:" 
+              << sailingRec.on_board << "\n";
+    std::cout << std::left << std::setw(25) << "Lane Capacity Used:" 
+              << lanePercentFull << "%\n";
+    std::cout << std::left << std::setw(25) << "Passenger Capacity Used:" 
+              << peoplePercentFull << "%\n";
+    std::cout << "===================================================\n\n";
+}

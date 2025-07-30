@@ -97,6 +97,9 @@ public:
     // Ensure the given sailingID exists; throws if not.
     static bool checkSailingExists(const std::string& sailingID);
 
+    // Print a report with info about vehicles aboard a sailing
+    static void printVehicleReport(const std::string& sailingID);
+
 private:
 };
 

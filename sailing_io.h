@@ -72,6 +72,9 @@ public:
     /// Print all records in a paginated report (e.g., 5 per page)
     static void printSailingReport();
 
+    // Print a report with info about vehicles aboard a sailing
+    static void printCheckVehicles(const std::string& sailingID);
+
     /// Close the underlying file stream
     static void close();
 };

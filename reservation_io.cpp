@@ -26,8 +26,15 @@ static bool isOpen = false;
 // Precondition:
 // None
 bool ReservationIO::open() {
-    if (!isOpen ) {
+    if (!isOpen) {
         dataFile.open(fileName, std::ios::in | std::ios::out | std::ios::binary);
+
+        if (!dataFile.is_open()) {
+            dataFile.open(fileName, std::ios::out | std::ios::binary); 
+            dataFile.close();
+            dataFile.open(fileName, std::ios::in | std::ios::out | std::ios::binary);
+        }
+        
         isOpen = dataFile.is_open();
     }
     return isOpen;
@@ -108,12 +115,16 @@ std::vector<Reservation> ReservationIO::getReservationsByLicense(const std::stri
     std::vector<Reservation> matches;
     if (!isOpen) return matches;
 
+    std::cout << "first part" << std::endl;
+
     reset();
     Reservation temp;
+    std::cout << "second part" << std::endl;
     while (dataFile.read(reinterpret_cast<char*>(&temp), sizeof(Reservation))) {
         if (temp.currentVehicleLicense == license) {
             matches.push_back(temp);
         }
     }
+    std::cout << "third part" << std::endl;
     return matches;
 }

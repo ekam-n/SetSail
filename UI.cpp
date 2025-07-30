@@ -118,9 +118,6 @@ void UserInterface::chooseSailing() {
   int choice = getChoice();
   if (choice == 1) {
     string sailingID, vesselName, departTerm, departDay, departTime;
-    cout << "Enter name of vessel for sailing: ";
-    cin >> vesselName;
-    clearInput();
     cout << "Enter sailing departure terminal: ";
     cin >> departTerm;
     clearInput();
@@ -129,6 +126,9 @@ void UserInterface::chooseSailing() {
     clearInput();
     cout << "Enter time of departure in 24-hour time: ";
     cin >> departTime;
+    clearInput();
+    cout << "Enter name of vessel for sailing: ";
+    cin >> vesselName;
     clearInput();
     if (!(Sailing::createSailing(vesselName, departTerm, departDay, departTime))) 
       cout << "Sailing ID could not be created\n";
@@ -166,8 +166,11 @@ void UserInterface::chooseReservation() {
     cout << "Enter sailing ID of the sailing to be reserved: ";
     cin >> sailingID;
     UserInterface::clearInput();
-    cout << "Enter number of vehicle on board: ";
+    cout << "Enter number of occupants: ";
     cin >> occupants;
+    UserInterface::clearInput();
+    cout << "Is your vehicle over 2 metres tall and/or longer than 7 metres? [Y/N] ";
+    cin >> specialVehicle;
     UserInterface::clearInput();
     cout << "Enter vehicle license: ";
     cin >> vehicleLicense; 
@@ -175,15 +178,12 @@ void UserInterface::chooseReservation() {
     cout << "Please enter a phone number (###-###-####): ";
     cin >> phoneNum;
     UserInterface::clearInput();
-    cout << "Is your vehicle over 2 metres tall and/or longer than 7 metres? [Y/N] ";
-    cin >> specialVehicle;
-    UserInterface::clearInput();
-    if (&specialVehicle == "N") {
+    if (specialVehicle == 'N') {
       if (Reservation::createReservation(sailingID, vehicleLicense, occupants, phoneNum)) {
         cout << "Reservation successfully created.\n";
         return;
       }
-    } else if (&specialVehicle == "Y") {
+    } else if (specialVehicle == 'Y') {
       float height, length;
       cout << "Enter vehicle height in metres (only the value): ";
       cin >> height;
@@ -224,7 +224,8 @@ void UserInterface::checkin() {
     string sailingID;
     cout << "Enter sailing ID of the sailing to be viewed: "; 
     cin >> sailingID;
-    Sailing::getVehicleOccupantsForReservation(sailingID); 
+    Sailing::printVehicleReport(sailingID);
+
     // "end of report" written here or in function?
   } else if (choice == 2) {
     string sailingID;
