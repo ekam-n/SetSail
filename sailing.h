@@ -26,13 +26,14 @@ public:
         char   vessel_ID[VLEN];     // Foreign key, fixed-length C-string
         float  HRL;                 // High Remaining Length
         float  LRL;                 // Low Remaining Length
+        float LCU;                  // Lane Capacity Used
         int    on_board;            // Current occupant count
 
         // Default constructor: zero-initialize
         Record() {
             std::memset(sailingID, 0, ID_LEN);
             std::memset(vessel_ID, 0, VLEN);
-            HRL = 0.0f;  LRL = 0.0f;  on_board = 0;
+            HRL = 0.0f;  LRL = 0.0f; LCU = 0.0f;  on_board = 0;
         }
 
         // Convenience constructor from C-strings
@@ -43,6 +44,7 @@ public:
             vessel_ID[VLEN - 1] = '\0';
             HRL = hrl_value;
             LRL = lrl_value;
+            LCU = 0.0f;
             on_board = 0;
         }
     };
@@ -81,6 +83,11 @@ public:
 
     static bool getLowRemLaneLength(const std::string& sailingID, float length); 
     // which returns true if the low ceiling lane length has room for x metres in length
+
+    // updates vehicle and people occupants when a reservation checks in
+    static bool updateOccupants(const std::string& sailingID,
+                                unsigned int numPeople,
+                                float vehicleLength);
 
     static void updateSailingForHigh(const std::string& sailingID, unsigned int occupants, float length); 
     // which returns nothing, just updates sailing records by subtracting x metres from high lane length and subtracing x occupants from capacity

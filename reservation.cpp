@@ -116,7 +116,7 @@ bool Reservation::createReservation(
     res.currentSailingID       = sailingID;
     res.currentVehicleLicense  = vehicleLicense;
     res.currentFare            = 14.0f;  
-    res.currentOccupants       = occupants;
+    res.currentPeopleOccupants       = occupants;
     res.specialVehicleHeight   = 0.0f;
     res.specialVehicleLength   = 0.0f;
 
@@ -189,7 +189,7 @@ bool Reservation::createSpecialReservation(
     res.currentSailingID = sailingID;
     res.currentVehicleLicense = vehicleLicense;
     res.currentFare = fare;
-    res.currentOccupants = occupants;
+    res.currentPeopleOccupants = occupants;
     res.specialVehicleHeight = height;
     res.specialVehicleLength = length;
 
@@ -201,14 +201,36 @@ bool Reservation::createSpecialReservation(
 // Checks in a vehicle for a reservation. Returns true if successful.
 // Precondition:
 // Reservation must exist
-bool Reservation::logArrivals(const std::string& sailingID,  const std::string& license) {
-    std::vector<Reservation> reservations = ReservationIO::getReservationsByLicense(license);
-    for (const auto& res : reservations ) {
-        if (res.currentSailingID == sailingID ) {
-            std::cout << "Vehicle's fare is: $" << res.currentFare << std::endl;
-            // Sailing::updateSailingForBoard(res.specialVehicleLength, res.currentOccupants);
-            return true;
+// In reservation.cpp
+
+bool Reservation::logArrivals(const std::string& sailingID,
+                              const std::string& license)
+{
+    // Get all reservations under this license
+    std::vector<Reservation> reservations =
+        ReservationIO::getReservationsByLicense(license);
+
+    // Standard vehicle length when not a special reservation
+    constexpr float defaultVehicleLength = 4.0f;
+
+    for (const auto& res : reservations) {
+        if (res.currentSailingID == sailingID) {
+            // Print the fare
+            std::cout << "Vehicle's fare is: $"
+                      << res.currentFare << std::endl;
+
+            // Determine length: use the special length if > 0, otherwise default
+            float length = (res.specialVehicleLength > 0.0f)
+                               ? res.specialVehicleLength
+                               : defaultVehicleLength;
+
+            // Update both people and vehicle space in one call
+            return Sailing::updateOccupants(sailingID,
+                                     res.currentPeopleOccupants,
+                                     length);
         }
     }
+
+    // No matching reservation found
     return false;
 }

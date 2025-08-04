@@ -112,21 +112,38 @@ bool SailingIO::checkSailingsForVessel(const std::string& vesselName) {
     }
     return false;
 }
+// In sailing_io.cpp
 
-void SailingIO::addPeopleOccupants(const std::string& sailingID, int count) {
+bool SailingIO::updateOccupants(const std::string& sailingID,
+                                unsigned int numPeople,
+                                float vehicleLength)
+{
     reset();
     Record temp;
     std::streamoff pos;
+
+    // Scan for the matching sailing record
     while ((pos = fs.tellg()), fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
         if (std::string(temp.sailingID) == sailingID) {
-            temp.on_board += count;
-            fs.clear(); fs.seekp(pos);
+            // 1) Add cumulative vehicle length
+            temp.LCU      += vehicleLength;
+            // 2) Add number of people onboard
+            temp.on_board += static_cast<int>(numPeople);
+
+            // 3) Write the updated record back in-place
+            fs.clear();
+            fs.seekp(pos, std::ios::beg);
             fs.write(reinterpret_cast<const char*>(&temp), sizeof temp);
             fs.flush();
-            return;
+            return true;
         }
     }
+
+    // Record not found
+    std::cerr << "Error: Reservation not found.\n";
+    return false;
 }
+
 
 
 // — checkSailingVehicleCapacity —
@@ -205,7 +222,7 @@ void SailingIO::updateSailingForHigh(const std::string& sailingID,
     while ((pos = fs.tellg()), fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
         if (std::string(temp.sailingID) == sailingID) {
             temp.HRL       -= (length+vehicleBuf);
-            temp.on_board += static_cast<int>(occupants);
+            // temp.on_board += static_cast<int>(occupants);
             fs.clear();
             fs.seekp(pos, std::ios::beg);
             fs.write(reinterpret_cast<const char*>(&temp), sizeof temp);
@@ -227,7 +244,7 @@ void SailingIO::updateSailingForLow(const std::string& sailingID,
     while ((pos = fs.tellg()), fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
         if (std::string(temp.sailingID) == sailingID) {
             temp.LRL       -= (length+vehicleBuf);
-            temp.on_board += static_cast<int>(occupants);
+            // temp.on_board += static_cast<int>(occupants);
             fs.clear();
             fs.seekp(pos, std::ios::beg);
             fs.write(reinterpret_cast<const char*>(&temp), sizeof temp);
@@ -336,8 +353,7 @@ void SailingIO::printCheckVehicles(const std::string& sailingID) {
 
     // Calculate metrics
     float totalLaneLength = vesselRec.highLaneLength + vesselRec.lowLaneLength;
-    float usedLaneLength = (vesselRec.highLaneLength - sailingRec.HRL) + 
-                          (vesselRec.lowLaneLength - sailingRec.LRL);
+    float usedLaneLength = sailingRec.LCU;
     float lanePercentFull = (totalLaneLength > 0) ? 
                           (usedLaneLength / totalLaneLength) * 100 : 0;
     

@@ -85,7 +85,8 @@ private:
     std::string currentSailingID;      // Current sailing ID being processed
     std::string currentVehicleLicense; // Current vehicle license being processed
     float currentFare;                 // Current fare amount
-    unsigned int currentOccupants;     // Current number of occupants
+    unsigned int currentPeopleOccupants;     // Current number of occupants
+    float currentVehicleLength; // current total length of all vehicles on sailing
     std::string phoneNumber;     // [in] Phone Number for reservation
     float specialVehicleHeight;        // Height for special vehicles
     float specialVehicleLength;       // Length for special vehicles

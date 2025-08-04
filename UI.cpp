@@ -251,8 +251,11 @@ void UserInterface::checkin() {
       if (license == "0") {
         break;
       } else { 
-        Reservation::logArrivals(sailingID, license);
-        cout << "Vehicle successfully checked in.\n";
+        if (Reservation::logArrivals(sailingID, license)) {
+          cout << "Vehicle successfully checked in.\n";
+        } else {
+          std::cout << "Error: Reservation not found\n";
+        };
       }
     }
   }
