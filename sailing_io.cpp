@@ -27,7 +27,7 @@ namespace {
     using Record = Sailing::Record;
 }
 
-float vehicleBuf = 0.5;
+static constexpr float vehicleBuf = 0.5f;
 
 void SailingIO::open() {
     fs.open(FILENAME, std::ios::in | std::ios::out | std::ios::binary);
@@ -204,7 +204,7 @@ void SailingIO::updateSailingForHigh(const std::string& sailingID,
     std::streamoff pos;
     while ((pos = fs.tellg()), fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
         if (std::string(temp.sailingID) == sailingID) {
-            temp.HRL       -= length;
+            temp.HRL       -= (length+vehicleBuf);
             temp.on_board += static_cast<int>(occupants);
             fs.clear();
             fs.seekp(pos, std::ios::beg);
@@ -226,7 +226,7 @@ void SailingIO::updateSailingForLow(const std::string& sailingID,
     std::streamoff pos;
     while ((pos = fs.tellg()), fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
         if (std::string(temp.sailingID) == sailingID) {
-            temp.LRL       -= length;
+            temp.LRL       -= (length+vehicleBuf);
             temp.on_board += static_cast<int>(occupants);
             fs.clear();
             fs.seekp(pos, std::ios::beg);

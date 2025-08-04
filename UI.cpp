@@ -162,7 +162,7 @@ void UserInterface::chooseReservation() {
     << "[2] Cancel_reservation\n";
   cout << "Enter selection: ";
   int choice = UserInterface::getChoice();
-  if (choice ==1) {
+  if (choice ==1) { // create Reservation
     string sailingID, vehicleLicense, phoneNum;
     int occupants;
     char specialVehicle;
@@ -230,7 +230,7 @@ void UserInterface::checkin() {
   << "[2] Log_arrivals\n";
   cout << "Enter selection: ";
   int choice = UserInterface::getChoice();
-  if (choice == 1) {
+  if (choice == 1) { // Vehicles On Board
     string sailingID;
     cout << "Enter sailing ID of the sailing to be viewed: "; 
     cin >> sailingID;
