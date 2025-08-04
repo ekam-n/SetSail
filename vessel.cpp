@@ -25,7 +25,6 @@ bool Vessel::createVessel(const std::string& vesselName,
 {
     // prevent duplicates
     if (VesselIO::checkVesselExists(vesselName.c_str())) {
-        std::cerr << "Error: Vessel already exists: " << vesselName << "\n";
         return false;
     }
 
@@ -61,7 +60,6 @@ bool Vessel::createVessel(const std::string& vesselName,
         return false;
     }
 
-    std::cout << "Vessel created successfully: " << vesselName << "\n";
     return true;
 }
 
@@ -78,7 +76,6 @@ bool Vessel::deleteVessel(const std::string& vesselName)
         return false;
     }
 
-    std::cout << "Vessel deleted: " << vesselName << "\n";
     return true;
 }
 

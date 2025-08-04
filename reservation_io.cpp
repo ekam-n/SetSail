@@ -114,17 +114,12 @@ bool ReservationIO::deleteReservation(const std::string& sailingID, const std::s
 std::vector<Reservation> ReservationIO::getReservationsByLicense(const std::string& license) {
     std::vector<Reservation> matches;
     if (!isOpen) return matches;
-
-    std::cout << "first part" << std::endl;
-
     reset();
     Reservation temp;
-    std::cout << "second part" << std::endl;
     while (dataFile.read(reinterpret_cast<char*>(&temp), sizeof(Reservation))) {
         if (temp.currentVehicleLicense == license) {
             matches.push_back(temp);
         }
     }
-    std::cout << "third part" << std::endl;
     return matches;
 }

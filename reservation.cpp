@@ -81,23 +81,23 @@ bool Reservation::createReservation(
     float length = 4.0f;
 
     if (!Sailing::checkSailingExists(sailingID)) {
-        std::cout << "Sailing does not exist" << endl;
+        std::cout << "Sailing does not exist.\n" << endl;
         return false;
     }
 
     if (!Sailing::checkSailingVehicleCapacity(sailingID)) {
-        cout << "Sailing does not have vehicle capacity" << endl;
+        cout << "Sailing does not have vehicle capacity.\n" << endl;
         return false;
     } 
 
     if (!Sailing::checkSailingPeopleCapacity(sailingID, occupants)) {
-        cout << "Sailing does not have person capacity" << endl;
+        cout << "Sailing does not have person capacity.\n" << endl;
         return false;
     }
 
     if (!Sailing::getLowRemLaneLength(sailingID, length)) {
         if (!Sailing::getHighRemLaneLength(sailingID, length)) {
-            cout << "No remaining Lane space for vehicles" << endl;
+            cout << "No remaining lane space for vehicles.\n" << endl;
             return false;
         } else {
             highCeilingReservation = true;
@@ -194,12 +194,11 @@ bool Reservation::createSpecialReservation(
 // Precondition:
 // Reservation must exist
 bool Reservation::logArrivals(const std::string& sailingID,  const std::string& license) {
-    cout << "We are here before the call" << endl;
     std::vector<Reservation> reservations = ReservationIO::getReservationsByLicense(license);
-    cout << "We are able to call the reservation IO class method" << endl;
     for (const auto& res : reservations ) {
         if (res.currentSailingID == sailingID ) {
-            std::cout << "Vehicle's fare is:" << res.currentFare << std::endl;
+            std::cout << "Vehicle's fare is: $" << res.currentFare << std::endl;
+            // Sailing::updateSailingForBoard(res.specialVehicleLength, res.currentOccupants);
             return true;
         }
     }

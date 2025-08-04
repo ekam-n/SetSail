@@ -12,11 +12,14 @@
 #include <iostream>
 #include <string>
 #include <limits>
+#include <ctime>
+#include <iomanip>
 #include "ui.h"
 #include "vehicle.h"
 #include "reservation.h"
 #include "vessel.h"
 #include "sailing.h"
+
 using namespace std;
 
 void UserInterface::clearInput() {
@@ -121,17 +124,17 @@ void UserInterface::chooseSailing() {
     cout << "Enter sailing departure terminal: ";
     cin >> departTerm;
     clearInput();
-    cout << "Enter day of departure (DD-MM-YY): ";
+    cout << "Enter day of departure (DD): ";
     cin >> departDay;
     clearInput();
-    cout << "Enter time of departure in 24-hour time: ";
+    cout << "Enter time of departure in 24-hour time (HH): ";
     cin >> departTime;
     clearInput();
     cout << "Enter name of vessel for sailing: ";
     cin >> vesselName;
     clearInput();
     if (!(Sailing::createSailing(vesselName, departTerm, departDay, departTime))) 
-      cout << "Sailing ID could not be created\n";
+      cout << "Sailing ID could not be created.\n";
   } else if (choice == 2) {
     string sailingID;
     cout << "Enter sailing ID of sailing to be deleted: ";
@@ -141,7 +144,7 @@ void UserInterface::chooseSailing() {
     char decision;
     cin >> decision;
     if (decision == 'N') {
-      cout << "Sailing not deleted";
+      cout << "Sailing not deleted.\n";
     } else if (decision == 'Y') {
       if (Sailing::deleteSailing(sailingID)) {
         cout << "Sailing successfully deleted.\n";
@@ -199,16 +202,23 @@ void UserInterface::chooseReservation() {
   } else if (choice == 2) {
     string vehicleLicense;
     string sailingID;
-    cout << "Enter vehicle license: " << endl;
+    cout << "Enter vehicle license: ";
     cin >> vehicleLicense;
     UserInterface::clearInput();
-    cout << "Enter the sailing ID: " << endl;
+    cout << "Enter the sailing ID: ";
     cin >> sailingID;
     UserInterface::clearInput();
-    if (Reservation::cancelReservation(sailingID, vehicleLicense)) {
-      cout << "Reservation successfully cancelled.";
-    } else {
-      cout << "Error: reservation not cancelled.";
+    cout << "Are you sure you wish to delete the reservation for " << sailingID << "? [Y/N] ";
+    char decision;
+    cin >> decision;
+    if (decision == 'N') {
+      cout << "Reservation not deleted.\n";
+    } else if (decision == 'Y') {
+      if (Reservation::cancelReservation(sailingID, vehicleLicense)) {
+        cout << "Reservation successfully cancelled.\n";
+      } else {
+        cout << "Error: reservation not cancelled.\n";
+      }
     }
   }
 }
@@ -242,7 +252,7 @@ void UserInterface::checkin() {
         break;
       } else { 
         Reservation::logArrivals(sailingID, license);
-        cout << "Vehicle successfully checked in.";
+        cout << "Vehicle successfully checked in.\n";
       }
     }
   }
@@ -250,6 +260,12 @@ void UserInterface::checkin() {
 
 // PRINT SAILING REPORT
 void UserInterface::printSailing() {
+  cout << "===== Sailing Report =====\n";
+  time_t now = time(nullptr);
+  tm* localTime = localtime(&now);
+
+  cout << put_time(localTime, "%B %d %H:%M %Z\n\n");
+
   Sailing::printSailingReport();
 }
 

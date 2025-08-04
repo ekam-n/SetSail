@@ -16,6 +16,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <limits>
+#include <iomanip>
 
 //---------------------------------------------------------
 // static void Sailing::init()
@@ -32,7 +33,21 @@ bool Sailing::createSailing(const std::string& vesselName,
     std::string sid;
     float lrl, hrl;
 
-    sid = departTerm+"-"+departDay+"-"+departTime;
+    std::string termCode = departTerm.substr(0, 3);
+    for (char& letter : termCode ) {
+        if ( letter >= 'a' && letter <= 'z' ) {
+            letter = letter - ('a' - 'A');
+        }
+    }
+
+    for ( char c : departDay ) {
+        if ( !isdigit(c) ) {
+            std::cout << "Invalid data. Please re-enter departure day.\n";
+            break;
+        }
+    }
+
+    sid = termCode + "-" + departDay + "-" + departTime;
 
     do {
         if (!Vessel::checkVesselForSailing(vesselName))
@@ -120,5 +135,9 @@ void Sailing::shutdown() {
 }
 
 void Sailing::printVehicleReport(const std::string& sailingID) {
+    char choice;
     SailingIO::printCheckVehicles(sailingID);
+    std::cout << "End of Report. Enter <0> to return to the main menu.\n";
+    std::cin >> choice;
+    if ( choice == '0' ) return;
 }

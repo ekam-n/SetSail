@@ -27,6 +27,8 @@ namespace {
     using Record = Sailing::Record;
 }
 
+float vehicleBuf = 0.5;
+
 void SailingIO::open() {
     fs.open(FILENAME, std::ios::in | std::ios::out | std::ios::binary);
     if (!fs) {
@@ -168,7 +170,7 @@ bool SailingIO::getHighRemLaneLength(const std::string& sailingID, float length)
     Record temp;
     while (fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
         if (std::string(temp.sailingID) == sailingID) {
-            return temp.HRL >= length;
+            return temp.HRL >= ( length + vehicleBuf );
         }
     }
     return false;
@@ -181,11 +183,15 @@ bool SailingIO::getLowRemLaneLength(const std::string& sailingID, float length) 
     Record temp;
     while (fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
         if (std::string(temp.sailingID) == sailingID) {
-            return temp.LRL >= length;
+            return temp.LRL >= ( length + vehicleBuf );
         }
     }
     return false;
 }
+
+// — updateSailingForBoard —
+// update sailing records after logging arrvials
+// void SailingIO::updateSailingForBoard(res.specialVehicleLength, res.currentOccupants) 
 
 // — updateSailingForHigh —
 // subtract `length` metres from HRL and add `occupants` to on_board
@@ -270,23 +276,34 @@ void SailingIO::printSailingReport() {
     Record temp;
     const int pageSize = 5;
     int printed = 0;
-
-    std::cout << std::left << std::setw(32) << "SailingID"
-              << std::setw(32) << "VesselID"
-              << std::right << std::setw(8) << "LRL"
-              << std::setw(8) << "HRL"
-              << std::setw(10) << "OnBoard\n"
-              << std::string(90, '=') << "\n";
+    char choice;
 
     while (fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
-        std::cout << std::left << std::setw(32) << temp.sailingID
-                  << std::setw(32) << temp.vessel_ID
-                  << std::right << std::setw(8) << temp.LRL
-                  << std::setw(8) << temp.HRL
-                  << std::setw(10) << temp.on_board << "\n";
+        std::cout << std::left 
+                  << std::setw(12) << "SailingID"
+                  << std::setw(18) << "VesselName"
+                  << std::setw(5) << "LRL"
+                  << std::setw(5) << "HRL"
+                  << std::setw(15) << "Total Vehicles"
+                  << std::setw(8) << "%" << " Full\n"
+                  << std::string(90, '=') << "\n";
+        std::cout << std::left 
+                  << std::setw(12) << temp.sailingID
+                  << std::setw(18) << temp.vessel_ID
+                  << std::setw(5) << temp.LRL
+                  << std::setw(5) << temp.HRL
+                  << std::setw(15) << temp.on_board
+                  << "\n";
+                  // << std::setw(8) << temp.on_board / temp.capacity << "%\n";
         if (++printed % pageSize == 0) {
-            std::cout << "Press Enter to continue...";
+            std::cout << "\nEnd of Report. Enter <m> for 5 more sailings. Enter <0> to return to the main menu.\n";
+            std::cin >> choice;
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            if ( choice == '0' ) 
+                break;
+            else if ( choice == 'm' ) 
+                continue;
         }
     }
 }
@@ -328,20 +345,17 @@ void SailingIO::printCheckVehicles(const std::string& sailingID) {
                             (static_cast<float>(sailingRec.on_board) / vesselRec.maxPassengers) * 100 : 0;
 
     // Print report
-    std::cout << "\n===================================================\n";
-    std::cout << "          DETAILED REPORT FOR SAILING " << sailingID << "\n";
-    std::cout << "===================================================\n";
+    std::cout << "===== Vehicles on Board =====\n";
     std::cout << std::left << std::setw(25) << "Sailing ID:" << sailingRec.sailingID << "\n";
     std::cout << std::left << std::setw(25) << "Vessel Name:" << sailingRec.vessel_ID << "\n";
     std::cout << std::left << std::setw(25) << "Low Remaining Length:" 
-              << std::fixed << std::setprecision(2) << sailingRec.LRL << " meters\n";
+              << std::fixed << std::setprecision(2) << sailingRec.LRL << " metres\n";
     std::cout << std::left << std::setw(25) << "High Remaining Length:" 
-              << sailingRec.HRL << " meters\n";
+              << sailingRec.HRL << " metres\n";
     std::cout << std::left << std::setw(25) << "Vehicles On Board:" 
               << sailingRec.on_board << "\n";
     std::cout << std::left << std::setw(25) << "Lane Capacity Used:" 
               << lanePercentFull << "%\n";
     std::cout << std::left << std::setw(25) << "Passenger Capacity Used:" 
               << peoplePercentFull << "%\n";
-    std::cout << "===================================================\n\n";
 }
