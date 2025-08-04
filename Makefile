@@ -31,5 +31,8 @@ $(BUILD_DIR)/%.o: %.cpp | $(BUILD_DIR)
 clean:
 	rm -rf $(BUILD_DIR) 
 
+clean.dat:
+	rm *.dat
+
 # Auto‐include dependency files
 -include $(DEPS)
