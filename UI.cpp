@@ -453,7 +453,7 @@ void UserInterface::checkin() {
 
 // PRINT SAILING REPORT
 void UserInterface::printSailing() {
-    cout << "===== Sailing Report =====\n";
+    cout << "\n===== Sailing Report ============================================================================================\n";
     time_t now = time(nullptr);
     tm* localTime = localtime(&now);
 
