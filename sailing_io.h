@@ -21,8 +21,8 @@ public:
     /// Append a new SailingRecord to the end of the file
     static bool createSailing(const Sailing::Record& rec);
 
-    /// Delete the record matching the given sailing ID
-    static void deleteSailing(const std::string& sailingID);
+    /// Delete the record matching the given sailing ID, return true if sailing successfull deleted
+    static bool deleteSailing(const std::string& sailingID);
 
     /// Return true if any record’s vessel_ID matches the given name
     static bool checkSailingsForVessel(const std::string& vesselName);

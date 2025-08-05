@@ -8,8 +8,6 @@
 #define SAILING_H
 
 #include <string>
-// #include "vessel.h"       // For vessel existence checks
-// #include "reservation.h"  // For reservation-related queries
 #include <cstddef>
 
 // The Sailing Class encapsulates all sailing-related scenarios.

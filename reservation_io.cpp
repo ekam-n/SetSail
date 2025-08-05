@@ -165,3 +165,14 @@ std::vector<Reservation> ReservationIO::getReservationsByLicense(const std::stri
     }
     return matches;
 }
+
+bool ReservationIO::hasReservationsForSailing(const std::string& sailingID) {
+    reset();
+    Reservation temp;
+    while (dataFile.read(reinterpret_cast<char*>(&temp), sizeof(temp))) {
+        if (temp.currentSailingID == sailingID) {
+            return true;
+        }
+    }
+    return false;
+}

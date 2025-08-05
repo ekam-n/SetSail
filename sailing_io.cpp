@@ -14,6 +14,7 @@
 #include "sailing.h"               // For SailingClass::Record :contentReference[oaicite:1]{index=1}
 #include "vessel.h"
 #include "vessel_io.h"
+#include "reservation_io.h"
 
 #include <fstream>
 #include <iostream>
@@ -66,42 +67,53 @@ bool SailingIO::createSailing(const Record& rec) {
     return true;
 }
 
+bool SailingIO::deleteSailing(const std::string& sailingID) {
+    // 1) Quick check: any reservations?
+    if (ReservationIO::hasReservationsForSailing(sailingID))
+        return false;
 
-void SailingIO::deleteSailing(const std::string& sailingID) {
-    // Determine file size and record count
-    fs.clear(); fs.seekg(0, std::ios::end);
+    // 2) Figure out file size and record count
+    fs.clear();
+    fs.seekg(0, std::ios::end);
     std::streamoff fileSize = fs.tellg();
     size_t recSize = sizeof(Record);
-    if (fileSize < recSize) return;
+    if (fileSize < static_cast<std::streamoff>(recSize))
+        return false;                                 // no records at all
+
     size_t count = fileSize / recSize;
 
-    // Read last record
-    Record last;
-    fs.seekg((count - 1) * recSize, std::ios::beg);
-    fs.read(reinterpret_cast<char*>(&last), recSize);
-
-    // Find record to delete
+    // 3) Find the position of the target record
+    fs.clear();
     fs.seekg(0, std::ios::beg);
     Record temp;
     std::streamoff posToDelete = -1;
     for (size_t i = 0; i < count; ++i) {
         fs.read(reinterpret_cast<char*>(&temp), recSize);
         if (std::string(temp.sailingID) == sailingID) {
-            posToDelete = static_cast<std::streamoff>(fs.tellg()) - recSize;
+            posToDelete = fs.tellg() - static_cast<std::streamoff>(recSize);
             break;
         }
     }
-    if (posToDelete < 0) return;
+    if (posToDelete < 0)
+        return false;                                 // sailingID not found
 
-    // Overwrite target with last record
+    // 4) Read the last record
+    Record last;
+    fs.seekg((count - 1) * recSize, std::ios::beg);
+    fs.read(reinterpret_cast<char*>(&last), recSize);
+
+    // 5) Overwrite the target with the last record
     fs.clear();
     fs.seekp(posToDelete, std::ios::beg);
     fs.write(reinterpret_cast<const char*>(&last), recSize);
-    fs.flush(); fs.close();
+    fs.flush();
+    fs.close();
 
-    // Truncate file by one record
+    // 6) Truncate the file by one record and re-open
     std::filesystem::resize_file(FILENAME, fileSize - recSize);
     open();
+
+    return true;
 }
 
 bool SailingIO::checkSailingsForVessel(const std::string& vesselName) {

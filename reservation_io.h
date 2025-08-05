@@ -68,6 +68,9 @@ public:
         const std::string& license  // [in] Vehicle license to search
     );
 
+    /// Returns true if there is at least one reservation for the given sailing
+    static bool hasReservationsForSailing(const std::string& sailingID);
+
 private:
     // Private member variables would be declared here
     // Example:

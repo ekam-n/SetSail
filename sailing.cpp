@@ -71,9 +71,8 @@ bool Sailing::createSailing(const std::string& vesselName,
 // }
 
 bool Sailing::deleteSailing(const std::string& sailingID) {
-    checkSailingExists(sailingID);
-    SailingIO::deleteSailing(sailingID);
-    return true;
+    if (!checkSailingExists(sailingID)) return false;
+    else return SailingIO::deleteSailing(sailingID);
 }
 
 bool Sailing::checkVesselHasSailings(const std::string& vesselName) {
