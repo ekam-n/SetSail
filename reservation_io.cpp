@@ -80,30 +80,41 @@ bool ReservationIO::createReservation( const Reservation& res) {
 
 //------
 // Description:
-// Deletes a reservation record. Returns true if successful.
-// Precondition:
-// File must be open
-bool ReservationIO::deleteReservation(const std::string& sailingID, const std::string& license) {
+// Deletes a reservation record. Returns true if successful, false if reservationd doesn't exist
+bool ReservationIO::deleteReservation(const std::string& sailingID,
+                                       const std::string& license)
+{
     if (!isOpen) return false;
 
     std::vector<Reservation> allReservations;
+    bool found = false;
+
     reset();
-
     Reservation temp;
-    while (dataFile.read(reinterpret_cast<char*>(&temp), sizeof(Reservation))) {
-        if (temp.currentSailingID != sailingID || temp.currentVehicleLicense != license) {
-            allReservations.push_back(temp);
+    while (dataFile.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
+        // if this record matches the one to delete, skip it and mark "found"
+        if (temp.currentSailingID == sailingID
+         && temp.currentVehicleLicense == license) {
+            found = true;
+            continue;
         }
+        allReservations.push_back(temp);
     }
 
-    // Rewrite file
+    if (!found) {
+        // no such reservation existed
+        return false;
+    }
+
+    // rewrite file without the deleted record
     dataFile.close();
-    dataFile.open(fileName, std::ios::out | std::ios::trunc | std::ios::binary);
+    dataFile.open(fileName,
+                  std::ios::out | std::ios::trunc | std::ios::binary);
     for (const auto& r : allReservations) {
-        dataFile.write(reinterpret_cast<const char*>(&r), sizeof(Reservation));
+        dataFile.write(reinterpret_cast<const char*>(&r), sizeof r);
     }
-
-    return true;
+    dataFile.flush();
+    return dataFile.good();
 }
 
 //------

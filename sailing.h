@@ -89,20 +89,14 @@ public:
 
     // updates vehicle and people occupants when a reservation checks in
     static bool updateOccupants(const std::string& sailingID,
-                                unsigned int numPeople,
+                                int numPeople,
                                 float vehicleLength);
 
-    static void updateSailingForHigh(const std::string& sailingID, unsigned int occupants, float length); 
+    static void updateSailingForHigh(const std::string& sailingID, int occupants, float length); 
     // which returns nothing, just updates sailing records by subtracting x metres from high lane length and subtracing x occupants from capacity
 
-    static void updateSailingForLow(const std::string& sailingID, unsigned int occupants, float length); 
+    static void updateSailingForLow(const std::string& sailingID, int occupants, float length); 
     // which returns nothing, just updates sailing records by subtracting x metres from low lane length and subtracing x occupants from capacity
-
-    // add to HRL when cancelling Reservation
-    static bool revertSailingForHigh(const std::string&, unsigned, float);
-
-    // add to LRL when cancelling Reservation
-    static bool revertSailingForLow (const std::string&, unsigned, float);
 
     // Print a paginated report of all sailings.
     static void printSailingReport();

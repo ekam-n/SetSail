@@ -29,7 +29,7 @@ public:
 
     // update occupants on a sailing
     static bool updateOccupants(const std::string& sailingID,
-                                unsigned int numPeople,
+                                int numPeople,
                                 float vehicleLength);
 
     /// Returns true if there is room for one more vehicle
@@ -52,7 +52,6 @@ public:
      * remove `occupants` from on_board count for the given sailing.
      */
     static void updateSailingForHigh(const std::string& sailingID,
-                                     unsigned int occupants,
                                      float length);
 
     /**
@@ -60,20 +59,7 @@ public:
      * remove `occupants` from on_board count for the given sailing.
      */
     static void updateSailingForLow(const std::string& sailingID,
-                                    unsigned int occupants,
                                     float length);
-
-
-    /// Undo a high-lane reservation: add back lane-space + buffer, remove people
-    static bool revertSailingForHigh(const std::string& sailingID,
-                                   unsigned int occupants,
-                                   float length);
-
-    /// Undo a low-lane reservation: add back lane-space + buffer, remove people
-    static bool revertSailingForLow(const std::string& sailingID,
-                                  unsigned int occupants,
-                                  float length);
-
 
     /// Return the on_board count for the record with this ID
     static int getPeopleOccupants(const std::string& sailingID);

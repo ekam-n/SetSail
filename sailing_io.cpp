@@ -116,23 +116,25 @@ bool SailingIO::checkSailingsForVessel(const std::string& vesselName) {
 // In sailing_io.cpp
 
 bool SailingIO::updateOccupants(const std::string& sailingID,
-                                unsigned int numPeople,
+                                int numPeople,
                                 float vehicleLength)
 {
     reset();
     Record temp;
     std::streamoff pos;
-
-    // Scan for the matching sailing record
     while ((pos = fs.tellg()), fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
         if (std::string(temp.sailingID) == sailingID) {
-            // 1) Add cumulative vehicle length
-            temp.LCU      += vehicleLength + 0.5f;
-            // 2) Add number of people & vehicles onboard
-            temp.ppl_on_board += static_cast<int>(numPeople);
-            temp.veh_on_board += static_cast<int>(1);
+            // 1) Adjust cumulative vehicle‐metres + buffer
+            float buf = (vehicleLength > 0 ? vehicleBuf : -vehicleBuf);
+            temp.LCU += (vehicleLength + buf);
 
-            // 3) Write the updated record back in-place
+            // 2) Adjust people count
+            temp.ppl_on_board += numPeople;
+
+            // 3) Adjust vehicle count (+1 on create, –1 on cancel)
+            temp.veh_on_board += (vehicleLength > 0 ? 1 : -1);
+
+            // write back
             fs.clear();
             fs.seekp(pos, std::ios::beg);
             fs.write(reinterpret_cast<const char*>(&temp), sizeof temp);
@@ -140,11 +142,10 @@ bool SailingIO::updateOccupants(const std::string& sailingID,
             return true;
         }
     }
-
-    // Record not found
-    std::cerr << "Error: Reservation not found.\n";
+    std::cerr << "Error: Sailing ID not found: " << sailingID << "\n";
     return false;
 }
+
 
 
 
@@ -208,14 +209,9 @@ bool SailingIO::getLowRemLaneLength(const std::string& sailingID, float length) 
     return false;
 }
 
-// — updateSailingForBoard —
-// update sailing records after logging arrvials
-// void SailingIO::updateSailingForBoard(res.specialVehicleLength, res.currentOccupants) 
-
 // — updateSailingForHigh —
 // subtract `length` metres from HRL and add `occupants` to on_board
 void SailingIO::updateSailingForHigh(const std::string& sailingID,
-                                     unsigned int occupants,
                                      float length)
 {
     reset();
@@ -223,8 +219,8 @@ void SailingIO::updateSailingForHigh(const std::string& sailingID,
     std::streamoff pos;
     while ((pos = fs.tellg()), fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
         if (std::string(temp.sailingID) == sailingID) {
-            temp.HRL       -= (length+vehicleBuf);
-            // temp.on_board += static_cast<int>(occupants);
+            float buf = (length > 0 ? vehicleBuf : -vehicleBuf);
+            temp.HRL -= (length + buf);
             fs.clear();
             fs.seekp(pos, std::ios::beg);
             fs.write(reinterpret_cast<const char*>(&temp), sizeof temp);
@@ -234,10 +230,7 @@ void SailingIO::updateSailingForHigh(const std::string& sailingID,
     }
 }
 
-// — updateSailingForLow —
-// subtract `length` metres from LRL and add `occupants` to on_board
 void SailingIO::updateSailingForLow(const std::string& sailingID,
-                                    unsigned int occupants,
                                     float length)
 {
     reset();
@@ -245,8 +238,8 @@ void SailingIO::updateSailingForLow(const std::string& sailingID,
     std::streamoff pos;
     while ((pos = fs.tellg()), fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
         if (std::string(temp.sailingID) == sailingID) {
-            temp.LRL       -= (length+vehicleBuf);
-            // temp.on_board += static_cast<int>(occupants);
+            float buf = (length > 0 ? vehicleBuf : -vehicleBuf);
+            temp.LRL -= (length + buf);
             fs.clear();
             fs.seekp(pos, std::ios::beg);
             fs.write(reinterpret_cast<const char*>(&temp), sizeof temp);
@@ -255,6 +248,7 @@ void SailingIO::updateSailingForLow(const std::string& sailingID,
         }
     }
 }
+
 
 int SailingIO::getPeopleOccupants(const std::string& sailingID) {
     reset();

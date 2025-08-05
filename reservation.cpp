@@ -48,22 +48,43 @@ void Reservation::shutdown() {
 // Cancels an existing reservation. Returns true if successful.
 // Precondition:
 // Reservation must exist
-bool Reservation::cancelReservation(const std::string& sailingID, const std::string& license) {
-    float height = 0.0f;
-    float length = 0.0f;
-    std::vector<Reservation> reservations = ReservationIO::getReservationsByLicense(license);
-    for (const auto& res : reservations ) {
-        if (res.currentSailingID == sailingID ) {
-            height = res.specialVehicleHeight;
-            length = res.specialVehicleLength;
+bool Reservation::cancelReservation(const std::string& sailingID,
+                                    const std::string& license)
+{
+    // 1) Look up the reservation so we know length & people
+    auto all = ReservationIO::getReservationsByLicense(license);
+    for (auto &res : all) {
+        if (res.currentSailingID == sailingID) {
+            float length = 
+                (res.specialVehicleLength > 0.0f)
+                  ? res.specialVehicleLength
+                  : 4.0f;                      // default vehicle length
+            int   people = static_cast<int>(res.currentPeopleOccupants);
+
+            // 2) Remove vehicle & people from the sailing record
+            //    (negative args undo the original addition)
+            Sailing::updateOccupants(sailingID,
+                                     -people,
+                                     -length);
+
+            // 3) Restore lane space in whichever lane was used
+            if (res.specialVehicleHeight > 2.0f) {
+                Sailing::updateSailingForHigh(sailingID,
+                                              0,
+                                              -length);
+            } else {
+                Sailing::updateSailingForLow(sailingID,
+                                             0,
+                                             -length);
+            }
+            break;
         }
     }
-    int people = Sailing::getPeopleOccupantsForReservation(sailingID);
-    if (height > 2.0 ) Sailing::updateSailingForHigh(sailingID, people, length);
-    else Sailing::updateSailingForLow(sailingID, people, length);
 
+    // 4) Finally delete the reservation record
     return ReservationIO::deleteReservation(sailingID, license);
 }
+
 
 //------
 // Description:

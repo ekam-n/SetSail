@@ -99,7 +99,7 @@ bool Sailing::getLowRemLaneLength(const std::string& sailingID, float length) {
 }
 
 bool Sailing::updateOccupants(const std::string& sailingID,
-                                unsigned int numPeople,
+                                int numPeople,
                                 float vehicleLength) 
 {
     return SailingIO::updateOccupants(sailingID,
@@ -108,17 +108,17 @@ bool Sailing::updateOccupants(const std::string& sailingID,
 }
 
 void Sailing::updateSailingForHigh(const std::string& sailingID,
-                                   unsigned int occupants,
+                                   int occupants,
                                    float length)
 {
-    SailingIO::updateSailingForHigh(sailingID, occupants, length);
+    SailingIO::updateSailingForHigh(sailingID, length);
 }
 
 void Sailing::updateSailingForLow(const std::string& sailingID,
-                                  unsigned int occupants,
+                                  int occupants,
                                   float length)
 {
-    SailingIO::updateSailingForLow(sailingID, occupants, length);
+    SailingIO::updateSailingForLow(sailingID, length);
 }
 
 int Sailing::getPeopleOccupantsForReservation(const std::string& sailingID) {
