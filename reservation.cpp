@@ -150,72 +150,71 @@ bool Reservation::createReservation(
 // Precondition:
 // Valid reservation data
 bool Reservation::createSpecialReservation(
-    const std::string& sailingID,    // [in] Associated sailing ID
-    const std::string& vehicleLicense, // [in] Vehicle license plate
-    unsigned int occupants,          // [in] Number of people in vehicle
-    const std::string& phoneNumber,     // [in] Phone Number for reservation
-    float height,                    // [in] Vehicle height in meters
-    float length                     // [in] Vehicle length in meters
+    const std::string& sailingID,
+    const std::string& vehicleLicense,
+    unsigned int       occupants,
+    const std::string& phoneNumber,
+    float              height,
+    float              length
 ) {
-    bool highCeilingReservation = false; // true = high, false = low
-    float fare = 0.0f;
-
-    if (!Sailing::checkSailingExists(sailingID)) {
+    // 1. Basic checks (same as before)
+    if (!Sailing::checkSailingExists(sailingID)
+     || !Sailing::checkSailingVehicleCapacity(sailingID)
+     || !Sailing::checkSailingPeopleCapacity(sailingID, occupants))
+    {
         return false;
     }
 
-    if (!Sailing::checkSailingVehicleCapacity(sailingID)) {
-        return false;
-    } 
-
-    if (!Sailing::checkSailingPeopleCapacity(sailingID, occupants)) {
-        return false;
-    }
-
+    // 2. Register the vehicle if needed
     if (!VehicleIO::checkVehicleExists(vehicleLicense)) {
-        if ( height > 2.0 || length > 7.0 ) 
-            Vehicle::createSpecialVehicleForReservation(vehicleLicense, phoneNumber, height, length);
+        if (height > 2.0f || length > 7.0f)
+            Vehicle::createSpecialVehicleForReservation(
+                vehicleLicense, phoneNumber, height, length);
         else
-            Vehicle::createVehicleForReservation(vehicleLicense, phoneNumber);
+            Vehicle::createVehicleForReservation(
+                vehicleLicense, phoneNumber);
     }
 
-    if ( height > 2.0 ) {
-        if (!Sailing::getHighRemLaneLength(sailingID, length)) {
+    // 3. Choose lane & compute fare
+    bool usedHigh = false;
+    float fare;
+    // if it's tall, must go high
+    if (height > 2.0f) {
+        if (!Sailing::getHighRemLaneLength(sailingID, length))
             return false;
+        Sailing::updateSailingForHigh(sailingID, occupants, length);
+        usedHigh = true;
+        fare = length * 3.0f;
+
+    } else {
+        // first try low
+        if (Sailing::getLowRemLaneLength(sailingID, length)) {
+            Sailing::updateSailingForLow(sailingID, occupants, length);
+            fare = length * 2.0f;
+        }
+        // otherwise fall back to high
+        else if (Sailing::getHighRemLaneLength(sailingID, length)) {
+            Sailing::updateSailingForHigh(sailingID, occupants, length);
+            usedHigh = true;
+            fare = length * 3.0f;
         }
         else {
-            Sailing::updateSailingForHigh(sailingID, occupants, length);
-            fare = length * 3.0;
+            return false; // no space anywhere
         }
-    } else {
-        if (!Sailing::getLowRemLaneLength(sailingID, length)) {
-            if (!Sailing::getHighRemLaneLength(sailingID, length)) {
-                return false;
-            } else {
-                highCeilingReservation = true;
-            }
-        } else {
-            if (highCeilingReservation) {
-                Sailing::updateSailingForHigh(sailingID, occupants, length);
-            } else {
-                Sailing::updateSailingForLow(sailingID, occupants, length);
-            }
-            fare = length * 2.0;
-        }
-
-        return true;
     }
- 
+
+    // 4. Build and persist the reservation record
     Reservation res;
-    res.currentSailingID = sailingID;
-    res.currentVehicleLicense = vehicleLicense;
-    res.currentFare = fare;
-    res.currentPeopleOccupants = occupants;
-    res.specialVehicleHeight = height;
-    res.specialVehicleLength = length;
+    res.currentSailingID         = sailingID;
+    res.currentVehicleLicense    = vehicleLicense;
+    res.currentFare              = fare;
+    res.currentPeopleOccupants   = occupants;
+    res.specialVehicleHeight     = height;
+    res.specialVehicleLength     = length;
 
     return ReservationIO::createReservation(res);
 }
+
 
 //------
 // Description:

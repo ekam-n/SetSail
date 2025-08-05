@@ -317,31 +317,42 @@ void UserInterface::chooseReservation() {
 
             bool success = false;
             if (specialVehicle == 'N' || specialVehicle == 'n') {
-                success = Reservation::createReservation(sailingID, vehicleLicense, occupants, phoneNum);
+                success = Reservation::createReservation(
+                    sailingID, vehicleLicense, occupants, phoneNum
+                );
             } else {
-                float height;
+                float height = 0.0f, length = 0.0f;
+                // keep looping until one of the two exceeds its threshold
                 do {
-                    cout << "Enter vehicle height in metres (only the value): ";
-                    if (!(cin >> height) || height <= 2.0f) {
-                        cout << "Invalid height. Must be > 2 metres.\n";
+                    // get height (or 0 if not applicable)
+                    cout << "Enter vehicle height in metres (or 0 if < 2m): ";
+                    if (!(cin >> height) || height < 0.0f) {
+                        cout << "Invalid input. Please enter a non-negative number.\n";
                         clearInput();
-                    } else break;
-                } while (true);
-                clearInput();
+                        continue;
+                    }
+                    clearInput();
 
-                float length;
-                do {
-                    cout << "Enter vehicle length in metres (only the value): ";
-                    if (!(cin >> length) || length <= 7.0f) {
-                        cout << "Invalid length. Must be > 7 metres.\n";
+                    // get length (or 0 if ≤ 7m)
+                    cout << "Enter vehicle length in metres (or 0 if ≤ 7m): ";
+                    if (!(cin >> length) || length < 0.0f) {
+                        cout << "Invalid input. Please enter a non-negative number.\n";
                         clearInput();
-                    } else break;
+                        continue;
+                    }
+                    clearInput();
+
+                    // enforce the OR rule
+                    if (height > 2.0f || length > 7.0f) {
+                        break;  // valid special‐vehicle dimensions
+                    }
+                    cout << "Error: vehicle must be over 2m tall OR longer than 7m.\n";
                 } while (true);
-                clearInput();
 
                 success = Reservation::createSpecialReservation(
-                             sailingID, vehicleLicense, occupants,
-                             phoneNum, height, length);
+                    sailingID, vehicleLicense, occupants,
+                    phoneNum, height, length
+                );
             }
 
             cout << (success
