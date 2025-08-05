@@ -147,9 +147,9 @@ void UserInterface::chooseVessel() {
             char decision;
             cin >> decision;
             clearInput();
-            if (decision == 'N') {
+            if (decision == 'N' || decision == 'n') {
                 cout << "Vessel not deleted.\n";
-            } else if (decision == 'Y') {
+            } else if (decision == 'Y' || decision == 'y') {
                 if (Vessel::deleteVessel(vesselID)) {
                     cout << "Vessel successfully deleted.\n";
                 } else {
@@ -236,9 +236,9 @@ void UserInterface::chooseSailing() {
             char decision;
             cin >> decision;
             clearInput();
-            if (decision == 'N') {
+            if (decision == 'N' || decision == 'n') {
                 cout << "Sailing not deleted.\n";
-            } else if (decision == 'Y') {
+            } else if (decision == 'Y' || decision == 'y') {
                 if (Sailing::deleteSailing(sailingID))
                     cout << "Sailing successfully deleted.\n";
                 else
@@ -294,7 +294,7 @@ void UserInterface::chooseReservation() {
                 cout << "Is your vehicle over 2 metres tall and/or longer than 7 metres? [Y/N] ";
                 cin >> specialVehicle;
                 clearInput();
-                if (specialVehicle=='Y' || specialVehicle=='N') break;
+                if (specialVehicle=='Y' || specialVehicle=='N' || specialVehicle == 'y' || specialVehicle == 'n') break;
                 else cout << "Invalid choice. Enter Y or N.\n";
             } while (true);
 
@@ -316,7 +316,7 @@ void UserInterface::chooseReservation() {
             } while (true);
 
             bool success = false;
-            if (specialVehicle == 'N') {
+            if (specialVehicle == 'N' || specialVehicle == 'n') {
                 success = Reservation::createReservation(sailingID, vehicleLicense, occupants, phoneNum);
             } else {
                 float height;
@@ -372,9 +372,9 @@ void UserInterface::chooseReservation() {
             char decision;
             cin >> decision;
             clearInput();
-            if (decision == 'N') {
+            if (decision == 'N' || decision == 'n') {
                 cout << "Reservation not deleted.\n";
-            } else if (decision == 'Y') {
+            } else if (decision == 'Y' || decision == 'y') {
                 if (Reservation::cancelReservation(sailingID, vehicleLicense)) {
                     cout << "Reservation successfully cancelled.\n";
                 } else {
