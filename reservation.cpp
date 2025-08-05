@@ -46,12 +46,10 @@ void Reservation::shutdown() {
 //------
 // Description:
 // Cancels an existing reservation. Returns true if successful.
-// Precondition:
-// Reservation must exist
 bool Reservation::cancelReservation(const std::string& sailingID,
                                     const std::string& license)
 {
-    // 1) Look up the reservation so we know length & people
+    // 1) Look up the reservation so we know length & people & lane flag
     auto all = ReservationIO::getReservationsByLicense(license);
     for (auto &res : all) {
         if (res.currentSailingID == sailingID) {
@@ -61,18 +59,19 @@ bool Reservation::cancelReservation(const std::string& sailingID,
                   : 4.0f;                      // default vehicle length
             int   people = static_cast<int>(res.currentPeopleOccupants);
 
-            // 2) Remove vehicle & people from the sailing record
-            //    (negative args undo the original addition)
+            // 2) Remove from onboard counts
             Sailing::updateOccupants(sailingID,
                                      -people,
                                      -length);
 
-            // 3) Restore lane space in whichever lane was used
-            if (res.specialVehicleHeight > 2.0f) {
+            // 3) Restore lane space based on the stored flag
+            if (res.usedHighLane) {
+                // undo high‐lane consumption
                 Sailing::updateSailingForHigh(sailingID,
                                               0,
                                               -length);
             } else {
+                // undo low‐lane consumption
                 Sailing::updateSailingForLow(sailingID,
                                              0,
                                              -length);
@@ -97,6 +96,9 @@ bool Reservation::createReservation(
     unsigned int occupants,            // [in] Number of people in vehicle
     const std::string phoneNumber      // [in] Phone Number for reservation
 ) {
+    
+    bool usedHigh = false;
+
     // standard vehicle length (metres)
     constexpr float vehicleLength = 4.0f;
 
@@ -121,10 +123,12 @@ bool Reservation::createReservation(
     // 4) Try to fit into low-ceiling lane first
     if (Sailing::getLowRemLaneLength(sailingID, vehicleLength)) {
         Sailing::updateSailingForLow(sailingID, occupants, vehicleLength);
+        usedHigh = false;
 
     // 5) Otherwise try high-ceiling lane
     } else if (Sailing::getHighRemLaneLength(sailingID, vehicleLength)) {
         Sailing::updateSailingForHigh(sailingID, occupants, vehicleLength);
+        usedHigh = true;
 
     // 6) No room anywhere
     } else {
@@ -132,6 +136,7 @@ bool Reservation::createReservation(
         return false;
     }
 
+    
     // 7) Build and persist the reservation record
     Reservation res;
     res.currentSailingID       = sailingID;
@@ -140,6 +145,7 @@ bool Reservation::createReservation(
     res.currentPeopleOccupants       = occupants;
     res.specialVehicleHeight   = 0.0f;
     res.specialVehicleLength   = 0.0f;
+    res.usedHighLane = usedHigh;
 
     return ReservationIO::createReservation(res);
 }
@@ -191,6 +197,7 @@ bool Reservation::createSpecialReservation(
         if (Sailing::getLowRemLaneLength(sailingID, length)) {
             Sailing::updateSailingForLow(sailingID, occupants, length);
             fare = length * 2.0f;
+            usedHigh = false;
         }
         // otherwise fall back to high
         else if (Sailing::getHighRemLaneLength(sailingID, length)) {
@@ -211,6 +218,7 @@ bool Reservation::createSpecialReservation(
     res.currentPeopleOccupants   = occupants;
     res.specialVehicleHeight     = height;
     res.specialVehicleLength     = length;
+    res.usedHighLane = usedHigh;
 
     return ReservationIO::createReservation(res);
 }

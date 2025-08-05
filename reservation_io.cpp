@@ -101,19 +101,29 @@ bool ReservationIO::deleteReservation(const std::string& sailingID,
         allReservations.push_back(temp);
     }
 
-    if (!found) {
-        // no such reservation existed
-        return false;
-    }
+    if (!found) return false;
 
     // rewrite file without the deleted record
     dataFile.close();
+    isOpen = false;
+
+    // reopen in read/write mode, truncating
     dataFile.open(fileName,
-                  std::ios::out | std::ios::trunc | std::ios::binary);
+                  std::ios::in | std::ios::out    // << add input mode
+                | std::ios::trunc | std::ios::binary);
+    isOpen = dataFile.is_open();
+
+    if (!isOpen) return false;
+
     for (const auto& r : allReservations) {
         dataFile.write(reinterpret_cast<const char*>(&r), sizeof r);
     }
     dataFile.flush();
+
+    // reposition for future reads
+    dataFile.clear();
+    dataFile.seekg(0, std::ios::beg);
+
     return dataFile.good();
 }
 
