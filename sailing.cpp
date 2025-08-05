@@ -98,6 +98,15 @@ bool Sailing::getLowRemLaneLength(const std::string& sailingID, float length) {
     return SailingIO::getLowRemLaneLength(sailingID, length);
 }
 
+bool Sailing::updateOccupants(const std::string& sailingID,
+                                unsigned int numPeople,
+                                float vehicleLength) 
+{
+    return SailingIO::updateOccupants(sailingID,
+                                numPeople,
+                                vehicleLength);
+}
+
 void Sailing::updateSailingForHigh(const std::string& sailingID,
                                    unsigned int occupants,
                                    float length)

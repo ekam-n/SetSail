@@ -27,8 +27,10 @@ public:
     /// Return true if any record’s vessel_ID matches the given name
     static bool checkSailingsForVessel(const std::string& vesselName);
 
-    /// Increment the on_board field for the record with this ID
-    static void addPeopleOccupants(const std::string& sailingID, int count);
+    // update occupants on a sailing
+    static bool updateOccupants(const std::string& sailingID,
+                                unsigned int numPeople,
+                                float vehicleLength);
 
     /// Returns true if there is room for one more vehicle
     static bool checkSailingVehicleCapacity(const std::string& sailingID);

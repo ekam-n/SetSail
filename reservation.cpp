@@ -71,46 +71,54 @@ bool Reservation::cancelReservation(const std::string& sailingID, const std::str
 // Precondition:
 // Valid reservation data
 bool Reservation::createReservation(
-    const std::string& sailingID,    // [in] Associated sailing ID
+    const std::string& sailingID,      // [in] Associated sailing ID
     const std::string& vehicleLicense, // [in] Vehicle license plate
-    unsigned int occupants,           // [in] Number of people in vehicle
-    const std::string phoneNumber     // [in] Phone Number for reservation
+    unsigned int occupants,            // [in] Number of people in vehicle
+    const std::string phoneNumber      // [in] Phone Number for reservation
 ) {
+    // standard vehicle length (metres)
+    constexpr float vehicleLength = 4.0f;
 
-    bool highCeilingReservation = false; // true = high, false = low
-    float length = 4.0f;
-
+    // 1) Sailing must exist
     if (!Sailing::checkSailingExists(sailingID)) {
-        std::cout << "Sailing does not exist.\n" << endl;
+        std::cout << "Sailing does not exist.\n";
         return false;
     }
 
+    // 2) Must have vehicle capacity (any free lane)
     if (!Sailing::checkSailingVehicleCapacity(sailingID)) {
-        cout << "Sailing does not have vehicle capacity.\n" << endl;
-        return false;
-    } 
-
-    if (!Sailing::checkSailingPeopleCapacity(sailingID, occupants)) {
-        cout << "Sailing does not have person capacity.\n" << endl;
+        std::cout << "Sailing does not have vehicle capacity.\n";
         return false;
     }
 
-    if (!Sailing::getLowRemLaneLength(sailingID, length)) {
-        if (!Sailing::getHighRemLaneLength(sailingID, length)) {
-            cout << "No remaining lane space for vehicles.\n" << endl;
-            return false;
-        } else {
-            highCeilingReservation = true;
-        }
-    } 
+    // 3) Must have people capacity
+    if (!Sailing::checkSailingPeopleCapacity(sailingID, occupants)) {
+        std::cout << "Sailing does not have person capacity.\n";
+        return false;
+    }
 
+    // 4) Try to fit into low-ceiling lane first
+    if (Sailing::getLowRemLaneLength(sailingID, vehicleLength)) {
+        Sailing::updateSailingForLow(sailingID, occupants, vehicleLength);
+
+    // 5) Otherwise try high-ceiling lane
+    } else if (Sailing::getHighRemLaneLength(sailingID, vehicleLength)) {
+        Sailing::updateSailingForHigh(sailingID, occupants, vehicleLength);
+
+    // 6) No room anywhere
+    } else {
+        std::cout << "No remaining lane space for vehicles.\n";
+        return false;
+    }
+
+    // 7) Build and persist the reservation record
     Reservation res;
-    res.currentSailingID = sailingID;
-    res.currentVehicleLicense = vehicleLicense;
-    res.currentFare = 14.0;
-    res.currentOccupants = occupants;
-    res.specialVehicleHeight = 0.0f;
-    res.specialVehicleLength = 0.0f;
+    res.currentSailingID       = sailingID;
+    res.currentVehicleLicense  = vehicleLicense;
+    res.currentFare            = 14.0f;  
+    res.currentPeopleOccupants       = occupants;
+    res.specialVehicleHeight   = 0.0f;
+    res.specialVehicleLength   = 0.0f;
 
     return ReservationIO::createReservation(res);
 }
@@ -181,7 +189,7 @@ bool Reservation::createSpecialReservation(
     res.currentSailingID = sailingID;
     res.currentVehicleLicense = vehicleLicense;
     res.currentFare = fare;
-    res.currentOccupants = occupants;
+    res.currentPeopleOccupants = occupants;
     res.specialVehicleHeight = height;
     res.specialVehicleLength = length;
 
@@ -193,14 +201,36 @@ bool Reservation::createSpecialReservation(
 // Checks in a vehicle for a reservation. Returns true if successful.
 // Precondition:
 // Reservation must exist
-bool Reservation::logArrivals(const std::string& sailingID,  const std::string& license) {
-    std::vector<Reservation> reservations = ReservationIO::getReservationsByLicense(license);
-    for (const auto& res : reservations ) {
-        if (res.currentSailingID == sailingID ) {
-            std::cout << "Vehicle's fare is: $" << res.currentFare << std::endl;
-            // Sailing::updateSailingForBoard(res.specialVehicleLength, res.currentOccupants);
-            return true;
+// In reservation.cpp
+
+bool Reservation::logArrivals(const std::string& sailingID,
+                              const std::string& license)
+{
+    // Get all reservations under this license
+    std::vector<Reservation> reservations =
+        ReservationIO::getReservationsByLicense(license);
+
+    // Standard vehicle length when not a special reservation
+    constexpr float defaultVehicleLength = 4.0f;
+
+    for (const auto& res : reservations) {
+        if (res.currentSailingID == sailingID) {
+            // Print the fare
+            std::cout << "Vehicle's fare is: $"
+                      << res.currentFare << std::endl;
+
+            // Determine length: use the special length if > 0, otherwise default
+            float length = (res.specialVehicleLength > 0.0f)
+                               ? res.specialVehicleLength
+                               : defaultVehicleLength;
+
+            // Update both people and vehicle space in one call
+            return Sailing::updateOccupants(sailingID,
+                                     res.currentPeopleOccupants,
+                                     length);
         }
     }
+
+    // No matching reservation found
     return false;
 }
