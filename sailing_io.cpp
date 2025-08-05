@@ -127,9 +127,10 @@ bool SailingIO::updateOccupants(const std::string& sailingID,
     while ((pos = fs.tellg()), fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
         if (std::string(temp.sailingID) == sailingID) {
             // 1) Add cumulative vehicle length
-            temp.LCU      += vehicleLength;
-            // 2) Add number of people onboard
+            temp.LCU      += vehicleLength + 0.5f;
+            // 2) Add number of people & vehicles onboard
             temp.ppl_on_board += static_cast<int>(numPeople);
+            temp.veh_on_board += static_cast<int>(1);
 
             // 3) Write the updated record back in-place
             fs.clear();
@@ -271,7 +272,7 @@ int SailingIO::getVehicleOccupants(const std::string& sailingID) {
     // scan for the matching sailingID
     while (fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
         if (std::string(temp.sailingID) == sailingID) {
-            return temp.ppl_on_board;   // return occupant count
+            return temp.veh_on_board;   // return occupant count
         }
     }
     return -1;                      // not found
@@ -429,7 +430,7 @@ void SailingIO::printCheckVehicles(const std::string& sailingID) {
     std::cout << std::left << std::setw(25) << "High Remaining Length:" 
               << sailingRec.HRL << " metres\n";
     std::cout << std::left << std::setw(25) << "Vehicles On Board:" 
-              << sailingRec.ppl_on_board << "\n";
+              << sailingRec.veh_on_board << "\n";
     std::cout << std::left << std::setw(25) << "Lane Capacity Used:" 
               << lanePercentFull << "%\n";
     std::cout << std::left << std::setw(25) << "Passenger Capacity Used:" 
