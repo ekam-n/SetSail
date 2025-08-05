@@ -19,6 +19,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <sstream>
 #include <limits>
 
 namespace {
@@ -289,38 +290,97 @@ bool SailingIO::checkSailingExists(const std::string& sailingID) {
 }
 
 void SailingIO::printSailingReport() {
+    // 1) Read all records
     reset();
-    Record temp;
+    std::vector<Record> recs;
+    Record tmp;
+    while (fs.read(reinterpret_cast<char*>(&tmp), sizeof tmp)) {
+        recs.push_back(tmp);
+    }
+
+    // 2) Chronological sort by DD then HH parsed out of sailingID = "TER-DD-HH"
+    auto parse_dt = [](const std::string &sid) {
+        size_t p1 = sid.find('-');
+        size_t p2 = sid.find('-', p1 + 1);
+        int day  = std::stoi(sid.substr(p1 + 1, p2 - p1 - 1));
+        int hour = std::stoi(sid.substr(p2 + 1));
+        return std::make_pair(day, hour);
+    };
+    std::sort(recs.begin(), recs.end(),
+        [&](auto &a, auto &b) {
+            auto da = parse_dt(a.sailingID);
+            auto db = parse_dt(b.sailingID);
+            if (da.first != db.first) return da.first < db.first;
+            return da.second < db.second;
+        }
+    );
+
+    // 3) Print header once
+    const int w1 = 11,  w2 = 25,
+              w3 = 8,   w4 = 8,
+              w5 = 15,  w6 = 15,
+              w7 = 15,  w8 = 15;
+    std::cout << std::left
+              << std::setw(w1) << "SailingID"
+              << std::setw(w2) << "VesselName"
+              << std::setw(w3) << "LRL"
+              << std::setw(w4) << "HRL"
+              << std::setw(w5) << "TotalVehicles"
+              << std::setw(w6) << "%VehiclesUsed"
+              << std::setw(w7) << "TotalPeople"
+              << std::setw(w8) << "%PeopleUsed"
+              << "\n"
+              << std::string(w1+w2+w3+w4+w5+w6+w7+w8, '=') << "\n";
+
+    // 4) Print rows with pagination
     const int pageSize = 5;
     int printed = 0;
     char choice;
 
-    while (fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
-        std::cout << std::left 
-                  << std::setw(12) << "SailingID"
-                  << std::setw(18) << "VesselName"
-                  << std::setw(5) << "LRL"
-                  << std::setw(5) << "HRL"
-                  << std::setw(15) << "Total Vehicles"
-                  << std::setw(8) << "%" << " Full\n"
-                  << std::string(90, '=') << "\n";
-        std::cout << std::left 
-                  << std::setw(12) << temp.sailingID
-                  << std::setw(18) << temp.vessel_ID
-                  << std::setw(5) << temp.LRL
-                  << std::setw(5) << temp.HRL
-                  << std::setw(15) << temp.on_board
+    for (auto &r : recs) {
+        // fetch live metrics
+        int totalVehicles = getVehicleOccupants(r.sailingID);
+        int totalPeople   = getPeopleOccupants(r.sailingID);
+
+        // get vessel capacities to compute “% used”
+        VesselRecord vRec{};
+        float vehPct = 0.0f, pplPct = 0.0f;
+        if (VesselIO::readVessel(r.vessel_ID, vRec)) {
+            float totalLane = vRec.highLaneLength + vRec.lowLaneLength;
+            float usedLane  = r.LCU;
+            vehPct = totalLane > 0
+                     ? (usedLane / totalLane) * 100.0f
+                     : 0.0f;
+            pplPct = vRec.maxPassengers > 0
+                     ? (static_cast<float>(totalPeople) / vRec.maxPassengers) * 100.0f
+                     : 0.0f;
+        }
+
+        // format floats to 2 decimals and append '%'
+        std::ostringstream ssLRL, ssHRL, ssVehPct, ssPplPct;
+        ssLRL   << std::fixed << std::setprecision(2) << r.LRL;
+        ssHRL   << std::fixed << std::setprecision(2) << r.HRL;
+        ssVehPct<< std::fixed << std::setprecision(2) << vehPct << '%';
+        ssPplPct<< std::fixed << std::setprecision(2) << pplPct << '%';
+
+        // row output
+        std::cout << std::left
+                  << std::setw(w1) << r.sailingID
+                  << std::setw(w2) << r.vessel_ID
+                  << std::setw(w3) << ssLRL.str()
+                  << std::setw(w4) << ssHRL.str()
+                  << std::setw(w5) << totalVehicles
+                  << std::setw(w6) << ssVehPct.str()
+                  << std::setw(w7) << totalPeople
+                  << std::setw(w8) << ssPplPct.str()
                   << "\n";
-                  // << std::setw(8) << temp.on_board / temp.capacity << "%\n";
-        if (++printed % pageSize == 0) {
-            std::cout << "\nEnd of Report. Enter <m> for 5 more sailings. Enter <0> to return to the main menu.\n";
+
+        // paginate every pageSize rows
+        if (++printed % pageSize == 0 && printed < (int)recs.size()) {
+            std::cout << "\nEnd of Page—press 'm' for more or '0' to quit: ";
             std::cin >> choice;
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-            if ( choice == '0' ) 
-                break;
-            else if ( choice == 'm' ) 
-                continue;
+            if (choice == '0') break;
         }
     }
 }
