@@ -349,6 +349,10 @@ void UserInterface::chooseReservation() {
                     cout << "Error: vehicle must be over 2m tall OR longer than 7m.\n";
                 } while (true);
 
+                // verify height and length of special vehicles
+                if (length < 7.0f) length = 7.0f;
+                if (height < 2.0f) height = 2.0f;
+
                 success = Reservation::createSpecialReservation(
                     sailingID, vehicleLicense, occupants,
                     phoneNum, height, length

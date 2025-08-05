@@ -127,6 +127,27 @@ bool ReservationIO::deleteReservation(const std::string& sailingID,
     return dataFile.good();
 }
 
+bool ReservationIO::markCheckedIn(const std::string& sailingID,
+                                  const std::string& license)
+{
+    reset();
+    Reservation temp;
+    std::streamoff pos;
+    while ((pos = dataFile.tellg()), dataFile.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
+        if (temp.currentSailingID == sailingID
+         && temp.currentVehicleLicense == license) {
+            temp.checkedIn = true;
+            dataFile.clear();
+            dataFile.seekp(pos);
+            dataFile.write(reinterpret_cast<const char*>(&temp), sizeof temp);
+            dataFile.flush();
+            return true;
+        }
+    }
+    return false;
+}
+
+
 //------
 // Description:
 // Gets all reservations for a license plate. Returns vector of reservations.

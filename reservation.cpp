@@ -49,38 +49,25 @@ void Reservation::shutdown() {
 bool Reservation::cancelReservation(const std::string& sailingID,
                                     const std::string& license)
 {
-    // 1) Look up the reservation so we know length & people & lane flag
     auto all = ReservationIO::getReservationsByLicense(license);
-    for (auto &res : all) {
+    for (const auto& res : all) {
         if (res.currentSailingID == sailingID) {
-            float length = 
-                (res.specialVehicleLength > 0.0f)
-                  ? res.specialVehicleLength
-                  : 4.0f;                      // default vehicle length
-            int   people = static_cast<int>(res.currentPeopleOccupants);
-
-            // 2) Remove from onboard counts
-            Sailing::updateOccupants(sailingID,
-                                     -people,
-                                     -length);
-
-            // 3) Restore lane space based on the stored flag
-            if (res.usedHighLane) {
-                // undo high‐lane consumption
-                Sailing::updateSailingForHigh(sailingID,
-                                              0,
-                                              -length);
-            } else {
-                // undo low‐lane consumption
-                Sailing::updateSailingForLow(sailingID,
-                                             0,
-                                             -length);
-            }
+            float length = res.specialVehicleLength > 0.0f
+                               ? res.specialVehicleLength
+                               : 7.0f;
+            if (res.usedHighLane)
+               Sailing::updateSailingForHigh(sailingID, 0, -length);
+             else
+               Sailing::updateSailingForLow(sailingID, 0, -length);
+           // only “undo” occupants if previously checked in
+           if (res.checkedIn) {
+             int   people = static_cast<int>(res.currentPeopleOccupants);
+             Sailing::updateOccupants(sailingID, -people, -length);
+           }
             break;
         }
     }
-
-    // 4) Finally delete the reservation record
+    // now remove the record itself
     return ReservationIO::deleteReservation(sailingID, license);
 }
 
@@ -100,7 +87,7 @@ bool Reservation::createReservation(
     bool usedHigh = false;
 
     // standard vehicle length (metres)
-    constexpr float vehicleLength = 4.0f;
+    constexpr float vehicleLength = 7.0f;
 
     // 1) Sailing must exist
     if (!Sailing::checkSailingExists(sailingID)) {
@@ -230,35 +217,29 @@ bool Reservation::createSpecialReservation(
 // Precondition:
 // Reservation must exist
 // In reservation.cpp
-
 bool Reservation::logArrivals(const std::string& sailingID,
                               const std::string& license)
 {
-    // Get all reservations under this license
-    std::vector<Reservation> reservations =
-        ReservationIO::getReservationsByLicense(license);
-
-    // Standard vehicle length when not a special reservation
-    constexpr float defaultVehicleLength = 4.0f;
-
+    auto reservations = ReservationIO::getReservationsByLicense(license);
     for (const auto& res : reservations) {
         if (res.currentSailingID == sailingID) {
-            // Print the fare
-            std::cout << "Vehicle's fare is: $"
-                      << res.currentFare << std::endl;
+            std::cout << "Vehicle's fare is: $" << res.currentFare << std::endl;
 
-            // Determine length: use the special length if > 0, otherwise default
             float length = (res.specialVehicleLength > 0.0f)
-                               ? res.specialVehicleLength
-                               : defaultVehicleLength;
+                                 ? res.specialVehicleLength
+                                 : 7.0f;
 
-            // Update both people and vehicle space in one call
-            return Sailing::updateOccupants(sailingID,
-                                     res.currentPeopleOccupants,
-                                     length);
+            // 1) Perform the seating/count update
+            bool ok = Sailing::updateOccupants(sailingID,
+                                               res.currentPeopleOccupants,
+                                               length);
+            if (!ok) return false;
+
+            // 2) Now mark this reservation as checked-in
+            ReservationIO::markCheckedIn(sailingID, license);
+            return true;
         }
     }
-
-    // No matching reservation found
     return false;
 }
+

@@ -55,6 +55,10 @@ public:
         const std::string& license     // [in] Vehicle license of reservation
     );
 
+    // marks a reservation record as checked in. 
+    static bool markCheckedIn(const std::string& sailingID,
+                                  const std::string& license);
+
     //------
     // Description:
     // Gets all reservations for a license plate. Returns vector of reservations.

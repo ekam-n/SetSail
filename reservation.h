@@ -90,7 +90,8 @@ private:
     std::string phoneNumber;     // [in] Phone Number for reservation
     float specialVehicleHeight;        // Height for special vehicles
     float specialVehicleLength;       // Length for special vehicles
-    bool usedHighLane;   // true if this reservation went into the high-ceiling lane
+    bool usedHighLane = false;   // true if this reservation went into the high-ceiling lane
+    bool checkedIn = false;         // true if the vehicle has been logged as arrived/checkedIn
 };
 
 #endif // RESERVATION_H
