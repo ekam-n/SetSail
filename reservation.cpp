@@ -222,7 +222,7 @@ bool Reservation::logArrivals(const std::string& sailingID,
 {
     auto reservations = ReservationIO::getReservationsByLicense(license);
     for (const auto& res : reservations) {
-        if (res.currentSailingID == sailingID) {
+        if (res.currentSailingID == sailingID && !res.checkedIn) {
             std::cout << "Vehicle's fare is: $" << res.currentFare << std::endl;
 
             float length = (res.specialVehicleLength > 0.0f)
