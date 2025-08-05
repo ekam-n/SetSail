@@ -3,6 +3,7 @@
 
 #include "vessel.h"
 #include "vessel_io.h"
+#include "sailing.h"
 #include <iostream>
 #include <cstring>
 
@@ -65,12 +66,14 @@ bool Vessel::createVessel(const std::string& vesselName,
 
 bool Vessel::deleteVessel(const std::string& vesselName)
 {
-    // ensure no sailings are scheduled for this vessel
-    if (!checkVesselForSailing(vesselName)) {
-        std::cerr << "Cannot delete vessel with scheduled sailings: " << vesselName << "\n";
+    // 1) refuse if there are ANY sailings for this vessel
+    if (Sailing::checkVesselHasSailings(vesselName)) {
+        std::cerr << "Cannot delete vessel with scheduled sailings: "
+                  << vesselName << "\n";
         return false;
     }
 
+    // 2) otherwise, proceed to delete from the vessels file
     if (!VesselIO::deleteVessel(vesselName.c_str())) {
         std::cerr << "Error: Failed to delete vessel: " << vesselName << "\n";
         return false;

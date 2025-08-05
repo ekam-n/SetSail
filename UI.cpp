@@ -153,7 +153,7 @@ void UserInterface::chooseVessel() {
                 if (Vessel::deleteVessel(vesselID)) {
                     cout << "Vessel successfully deleted.\n";
                 } else {
-                    cout << "Vessel not found.\n";
+                    cout << "Vessel not found or has scheduled sailings.\n";
                 }
             } else {
                 cout << "Invalid choice. Returning to menu.\n";
