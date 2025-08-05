@@ -29,46 +29,47 @@ void Sailing::init() {
 bool Sailing::createSailing(const std::string& vesselName,
                             const std::string& departTerm,
                             const std::string& departDay,
-                            const std::string& departTime) {
-    std::string sid;
-    float lrl, hrl;
-
+                            const std::string& departTime)
+{
+    // 1) Build the sailing ID
     std::string termCode = departTerm.substr(0, 3);
-    for (char& letter : termCode ) {
-        if ( letter >= 'a' && letter <= 'z' ) {
-            letter = letter - ('a' - 'A');
-        }
+    for (auto& c : termCode) {
+        c = static_cast<char>(toupper(c));
     }
+    std::string sid = termCode + "-" + departDay + "-" + departTime;
 
-    for ( char c : departDay ) {
-        if ( !isdigit(c) ) {
-            std::cout << "Invalid data. Please re-enter departure day.\n";
-            break;
-        }
-    }
-
-    sid = termCode + "-" + departDay + "-" + departTime;
-
-    do {
-        if (!Vessel::checkVesselForSailing(vesselName))
-            std::cout << "Vessel not found. Please re-enter.\n";
-        else break;
+    // 2) Reject duplicates
+    if (checkSailingExists(sid)) {
+        std::cerr << "Error: Sailing already exists: " << sid << "\n";
         return false;
-    } while (true);
+    }
 
-    Vessel::getLRL(vesselName, lrl);
-    Vessel::getHRL(vesselName, hrl);
+    // 3) Verify vessel exists
+    if (!Vessel::checkVesselForSailing(vesselName)) {
+        std::cerr << "Error: Vessel not found: " << vesselName << "\n";
+        return false;
+    }
 
+    // 4) Pull the current LRL/HRL off the vessel
+    float lrl = 0.0f, hrl = 0.0f;
+    if (!Vessel::getLRL(vesselName, lrl) ||
+        !Vessel::getHRL(vesselName, hrl))
+    {
+        std::cerr << "Error: Unable to fetch lane lengths for vessel: "
+                  << vesselName << "\n";
+        return false;
+    }
+
+    // 5) Create & persist
     Record rec(sid.c_str(), vesselName.c_str(), hrl, lrl);
-    SailingIO::createSailing(rec);
-    std::cout << "Sailing created successfully. The sailing ID is: "+sid+"\n";
+    if (!SailingIO::createSailing(rec)) {
+        std::cerr << "Error: Failed to write new sailing record.\n";
+        return false;
+    }
+
+    std::cout << "Sailing created successfully. ID: " << sid << "\n";
     return true;
 }
-
-// void Sailing::checkSailingExists(const std::string& sailingID) {
-//     if (SailingIO::getPeopleOccupants(sailingID) < 0)
-//         throw std::runtime_error("Sailing ID not found: " + sailingID);
-// }
 
 bool Sailing::deleteSailing(const std::string& sailingID) {
     if (!checkSailingExists(sailingID)) return false;
