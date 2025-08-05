@@ -129,7 +129,7 @@ bool SailingIO::updateOccupants(const std::string& sailingID,
             // 1) Add cumulative vehicle length
             temp.LCU      += vehicleLength;
             // 2) Add number of people onboard
-            temp.on_board += static_cast<int>(numPeople);
+            temp.ppl_on_board += static_cast<int>(numPeople);
 
             // 3) Write the updated record back in-place
             fs.clear();
@@ -174,7 +174,7 @@ bool SailingIO::checkSailingPeopleCapacity(const std::string& sailingID,
             VesselRecord vRec;
             if (!VesselIO::readVessel(temp.vessel_ID, vRec))
                 return false;
-            return (static_cast<unsigned>(temp.on_board) + occupants)
+            return (static_cast<unsigned>(temp.ppl_on_board) + occupants)
                    <= static_cast<unsigned>(vRec.maxPassengers);
         }
     }
@@ -260,7 +260,7 @@ int SailingIO::getPeopleOccupants(const std::string& sailingID) {
     Record temp;
     while (fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
         if (std::string(temp.sailingID) == sailingID)
-            return temp.on_board;
+            return temp.ppl_on_board;
     }
     return -1;
 }
@@ -271,7 +271,7 @@ int SailingIO::getVehicleOccupants(const std::string& sailingID) {
     // scan for the matching sailingID
     while (fs.read(reinterpret_cast<char*>(&temp), sizeof temp)) {
         if (std::string(temp.sailingID) == sailingID) {
-            return temp.on_board;   // return occupant count
+            return temp.ppl_on_board;   // return occupant count
         }
     }
     return -1;                      // not found
@@ -418,7 +418,7 @@ void SailingIO::printCheckVehicles(const std::string& sailingID) {
                           (usedLaneLength / totalLaneLength) * 100 : 0;
     
     float peoplePercentFull = (vesselRec.maxPassengers > 0) ?
-                            (static_cast<float>(sailingRec.on_board) / vesselRec.maxPassengers) * 100 : 0;
+                            (static_cast<float>(sailingRec.ppl_on_board) / vesselRec.maxPassengers) * 100 : 0;
 
     // Print report
     std::cout << "===== Vehicles on Board =====\n";
@@ -429,7 +429,7 @@ void SailingIO::printCheckVehicles(const std::string& sailingID) {
     std::cout << std::left << std::setw(25) << "High Remaining Length:" 
               << sailingRec.HRL << " metres\n";
     std::cout << std::left << std::setw(25) << "Vehicles On Board:" 
-              << sailingRec.on_board << "\n";
+              << sailingRec.ppl_on_board << "\n";
     std::cout << std::left << std::setw(25) << "Lane Capacity Used:" 
               << lanePercentFull << "%\n";
     std::cout << std::left << std::setw(25) << "Passenger Capacity Used:" 

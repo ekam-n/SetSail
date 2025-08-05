@@ -421,7 +421,7 @@ void UserInterface::checkin() {
             // -- Log_arrivals logic (unchanged) --
             string sailingID;
             do {
-                cout << "Enter sailing ID of the sailing to be reserved: ";
+                cout << "Enter sailing ID of the sailing that the reservation is for: ";
                 getline(cin, sailingID);
                 if (sailingID.empty()) cout << "Invalid sailing ID.\n";
                 else break;

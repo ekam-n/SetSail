@@ -63,6 +63,18 @@ public:
                                     unsigned int occupants,
                                     float length);
 
+
+    /// Undo a high-lane reservation: add back lane-space + buffer, remove people
+    static bool revertSailingForHigh(const std::string& sailingID,
+                                   unsigned int occupants,
+                                   float length);
+
+    /// Undo a low-lane reservation: add back lane-space + buffer, remove people
+    static bool revertSailingForLow(const std::string& sailingID,
+                                  unsigned int occupants,
+                                  float length);
+
+
     /// Return the on_board count for the record with this ID
     static int getPeopleOccupants(const std::string& sailingID);
 

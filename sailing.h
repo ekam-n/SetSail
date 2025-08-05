@@ -27,13 +27,15 @@ public:
         float  HRL;                 // High Remaining Length
         float  LRL;                 // Low Remaining Length
         float LCU;                  // Lane Capacity Used
-        int    on_board;            // Current occupant count
+        int    ppl_on_board;            // Current People occupant count
+        int    veh_on_board;            // Current Vehicle occupant count
+
 
         // Default constructor: zero-initialize
         Record() {
             std::memset(sailingID, 0, ID_LEN);
             std::memset(vessel_ID, 0, VLEN);
-            HRL = 0.0f;  LRL = 0.0f; LCU = 0.0f;  on_board = 0;
+            HRL = 0.0f;  LRL = 0.0f; LCU = 0.0f;  ppl_on_board = 0; veh_on_board = 0;
         }
 
         // Convenience constructor from C-strings
@@ -45,7 +47,8 @@ public:
             HRL = hrl_value;
             LRL = lrl_value;
             LCU = 0.0f;
-            on_board = 0;
+            ppl_on_board = 0;
+            veh_on_board = 0;
         }
     };
 
@@ -94,6 +97,12 @@ public:
 
     static void updateSailingForLow(const std::string& sailingID, unsigned int occupants, float length); 
     // which returns nothing, just updates sailing records by subtracting x metres from low lane length and subtracing x occupants from capacity
+
+    // add to HRL when cancelling Reservation
+    static bool revertSailingForHigh(const std::string&, unsigned, float);
+
+    // add to LRL when cancelling Reservation
+    static bool revertSailingForLow (const std::string&, unsigned, float);
 
     // Print a paginated report of all sailings.
     static void printSailingReport();
