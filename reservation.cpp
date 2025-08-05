@@ -89,6 +89,20 @@ bool Reservation::createReservation(
     // standard vehicle length (metres)
     constexpr float vehicleLength = 7.0f;
 
+    // —— 0) Prevent duplicate reservations for this sailing & vehicle
+    {
+        auto existing = ReservationIO::getReservationsByLicense(vehicleLicense);
+        for (const auto& r : existing) {
+            if (r.currentSailingID == sailingID) {
+                std::cout
+                    << "Error: Reservation already exists for sailing "
+                    << sailingID
+                    << " and vehicle “" << vehicleLicense << "”.\n";
+                return false;
+            }
+        }
+    }
+
     // 1) Sailing must exist
     if (!Sailing::checkSailingExists(sailingID)) {
         std::cout << "Sailing does not exist.\n";
@@ -150,6 +164,20 @@ bool Reservation::createSpecialReservation(
     float              height,
     float              length
 ) {
+    // —— 0) Prevent duplicate reservations for this sailing & vehicle
+    {
+        auto existing = ReservationIO::getReservationsByLicense(vehicleLicense);
+        for (const auto& r : existing) {
+            if (r.currentSailingID == sailingID) {
+                std::cout
+                    << "Error: Reservation already exists for sailing "
+                    << sailingID
+                    << " and vehicle “" << vehicleLicense << "”.\n";
+                return false;
+            }
+        }
+    }
+
     // 1. Basic checks (same as before)
     if (!Sailing::checkSailingExists(sailingID)
      || !Sailing::checkSailingVehicleCapacity(sailingID)
