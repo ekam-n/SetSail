@@ -317,7 +317,7 @@ void SailingIO::printSailingReport() {
 
     // 3) Print header once
     const int w1 = 11,  w2 = 25,
-              w3 = 8,   w4 = 8,
+              w3 = 8,   w4 = 9,
               w5 = 15,  w6 = 15,
               w7 = 15,  w8 = 15;
     std::cout << std::left
