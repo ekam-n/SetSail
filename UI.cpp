@@ -98,25 +98,32 @@ void UserInterface::chooseVessel() {
             } while (true);
             clearInput();
 
-            float hcll;
+            float hcll, lcll;
             do {
-                cout << "Enter high ceiling lane length (1-3600): ";
-                if (!(cin >> hcll) || hcll <= 0 || hcll > 3600) {
-                    cout << "Invalid length. Please enter a value > 0 and <= 3600.\n";
+                cout << "Enter high ceiling lane length (0-3600): ";
+                if (!(cin >> hcll) || hcll < 0.0f || hcll > 3600.0f) {
+                    cout << "Invalid length. Please enter a value between 0 and 3600.\n";
                     clearInput();
-                } else break;
-            } while (true);
-            clearInput();
+                    continue;
+                }
 
-            float lcll;
-            do {
-                cout << "Enter low ceiling lane length (1-3600): ";
-                if (!(cin >> lcll) || lcll <= 0 || lcll > 3600) {
-                    cout << "Invalid length. Please enter a value > 0 and <= 3600.\n";
+                cout << "Enter low ceiling lane length (0-3600): ";
+                if (!(cin >> lcll) || lcll < 0.0f || lcll > 3600.0f) {
+                    cout << "Invalid length. Please enter a value between 0 and 3600.\n";
                     clearInput();
-                } else break;
+                    continue;
+                }
+
+                if (hcll + lcll <= 0.0f) {
+                    cout << "Invalid: the sum of high and low ceiling lengths must be > 0.\n";
+                    clearInput();
+                    continue;
+                }
+
+                clearInput();
+                break;
             } while (true);
-            clearInput();
+            // clearInput();
 
             string vesselID;
             do {

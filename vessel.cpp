@@ -36,13 +36,13 @@ bool Vessel::createVessel(const std::string& vesselName,
     }
 
     // validate high-ceiling lane length
-    if (highLaneLength <= 0.0f) {
+    if (highLaneLength < 0.0f) {
         std::cerr << "Error: Invalid highLaneLength: " << highLaneLength << "\n";
         return false;
     }
 
     // validate low-ceiling lane length
-    if (lowLaneLength <= 0.0f) {
+    if (lowLaneLength < 0.0f) {
         std::cerr << "Error: Invalid lowLaneLength: " << lowLaneLength << "\n";
         return false;
     }
