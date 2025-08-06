@@ -6,7 +6,7 @@
 #include <ctime>
 #include <iomanip>
 #include "ui.h"
-#include "vehicle.h"
+#include "vehicle_io.h"
 #include "reservation.h"
 #include "vessel.h"
 #include "sailing.h"
@@ -269,102 +269,149 @@ void UserInterface::chooseReservation() {
         if (choice == 0) {
             return;
 
-        } else if (choice == 1) {
-            // -- Create_reservation logic (unchanged) --
-            string sailingID;
-            do {
-                cout << "Enter sailing ID of the sailing to be reserved: ";
-                getline(cin, sailingID);
-                if (sailingID.empty()) cout << "Invalid sailing ID.\n";
-                else break;
-            } while (true);
+        } // inside UserInterface::chooseReservation(), replace the choice==1 block with:
 
-            unsigned int occupants;
-            do {
-                cout << "Enter number of occupants: ";
-                if (!(cin >> occupants) || occupants == 0) {
-                    cout << "Invalid number. Must be > 0.\n";
-                    clearInput();
-                } else break;
-            } while (true);
+else if (choice == 1) {
+    // 1) Sailing ID
+    std::string sailingID;
+    do {
+        std::cout << "Enter sailing ID of the sailing to be reserved: ";
+        std::getline(std::cin, sailingID);
+        if (sailingID.empty()) std::cout << "Invalid sailing ID.\n";
+        else break;
+    } while (true);
+
+    // 2) Number of occupants
+    unsigned int occupants;
+    do {
+        std::cout << "Enter number of occupants: ";
+        if (!(std::cin >> occupants) || occupants == 0) {
+            std::cout << "Invalid number. Must be > 0.\n";
             clearInput();
+        } else break;
+    } while (true);
+    clearInput();
 
-            char specialVehicle;
-            do {
-                cout << "Is your vehicle over 2 metres tall and/or longer than 7 metres? [Y/N] ";
-                cin >> specialVehicle;
-                clearInput();
-                if (specialVehicle=='Y' || specialVehicle=='N' || specialVehicle == 'y' || specialVehicle == 'n') break;
-                else cout << "Invalid choice. Enter Y or N.\n";
-            } while (true);
+    // 3) License first
+    std::string vehicleLicense;
+    do {
+        std::cout << "Enter vehicle license: ";
+        std::getline(std::cin, vehicleLicense);
+        if (vehicleLicense.empty()) std::cout << "Invalid license.\n";
+        else break;
+    } while (true);
 
-            string vehicleLicense;
-            do {
-                cout << "Enter vehicle license: ";
-                getline(cin, vehicleLicense);
-                if (vehicleLicense.empty()) cout << "Invalid license.\n";
-                else break;
-            } while (true);
+    bool alreadyRegistered   = VehicleIO::checkVehicleExists(vehicleLicense);
+    bool existingIsSpecial   = alreadyRegistered
+                               && VehicleIO::checkVehicleIsSpecial(vehicleLicense);
+    std::string phoneNum;
+    float height = 0.0f, length = 0.0f;
 
-            string phoneNum;
-            do {
-                cout << "Please enter a phone number (###-###-####): ";
-                getline(cin, phoneNum);
-                if (phoneNum.size() != 12 || phoneNum[3]!='-' || phoneNum[7]!= '-')
-                    cout << "Invalid format. Use ###-###-####.\n";
-                else break;
-            } while (true);
+    if (!alreadyRegistered) {
+        // — phone number first —
+        do {
+            std::cout << "Please enter a phone number (###-###-####): ";
+            std::getline(std::cin, phoneNum);
+        } while (phoneNum.size() != 12 ||
+                 phoneNum[3] != '-' || phoneNum[7] != '-');
 
-            bool success = false;
-            if (specialVehicle == 'N' || specialVehicle == 'n') {
-                success = Reservation::createReservation(
-                    sailingID, vehicleLicense, occupants, phoneNum
-                );
-            } else {
-                float height = 0.0f, length = 0.0f;
-                // keep looping until one of the two exceeds its threshold
+        // — special-vehicle check —
+        char isSpecial = '\0';
+        do {
+            std::cout << "Is your vehicle over 2 metres tall and/or longer than 7 metres? [Y/N] ";
+            if (!(std::cin >> isSpecial)) {
+                std::cin.clear();
+                isSpecial = '\0';
+            }
+            clearInput();
+            isSpecial = std::toupper(isSpecial);
+
+            if (isSpecial == 'Y') {
+                // ask dimensions, but only enforce height>2 OR length>7
                 do {
-                    // get height (or 0 if not applicable)
-                    cout << "Enter vehicle height in metres (or 0 if < 2m): ";
-                    if (!(cin >> height) || height < 0.0f) {
-                        cout << "Invalid input. Please enter a non-negative number.\n";
+                    std::cout << "Enter vehicle height in metres (>= 0): ";
+                    if (!(std::cin >> height) || height < 0.0f) {
+                        std::cout << "Invalid. Must be non-negative.\n";
+                        clearInput();
+                        continue;
+                    }
+                    std::cout << "Enter vehicle length in metres (>= 0): ";
+                    if (!(std::cin >> length) || length < 0.0f) {
+                        std::cout << "Invalid. Must be non-negative.\n";
                         clearInput();
                         continue;
                     }
                     clearInput();
 
-                    // get length (or 0 if ≤ 7m)
-                    cout << "Enter vehicle length in metres (or 0 if ≤ 7m): ";
-                    if (!(cin >> length) || length < 0.0f) {
-                        cout << "Invalid input. Please enter a non-negative number.\n";
-                        clearInput();
-                        continue;
-                    }
-                    clearInput();
-
-                    // enforce the OR rule
                     if (height > 2.0f || length > 7.0f) {
-                        break;  // valid special‐vehicle dimensions
+                        // valid special
+                        break;
                     }
-                    cout << "Error: vehicle must be over 2m tall OR longer than 7m.\n";
+                    std::cout << "Error: vehicle must be taller than 2 m OR longer than 7 m.\n";
                 } while (true);
 
-                // verify height and length of special vehicles
-                if (length < 7.0f) length = 7.0f;
-                if (height < 2.0f) height = 2.0f;
+                break;    // done with Y/N loop
 
-                success = Reservation::createSpecialReservation(
-                    sailingID, vehicleLicense, occupants,
-                    phoneNum, height, length
-                );
+            } else if (isSpecial == 'N') {
+                // defaults
+                height = 2.0f;
+                length = 7.0f;
+                break;
+
+            } else {
+                std::cout << "Please enter Y or N.\n";
             }
+        } while (true);
 
-            cout << (success
-                      ? "Reservation successfully created.\n"
-                      : "Reservation creation failed.\n");
-            return;
 
-        } else if (choice == 2) {
+      }
+
+      // 4) Call the correct API:
+      bool success;
+      if (!alreadyRegistered) {
+          // brand‐new: definitely special
+          success = Reservation::createSpecialReservation(
+              sailingID,
+              vehicleLicense,
+              occupants,
+              phoneNum,
+              height,
+              length
+          );
+      }
+      else if (existingIsSpecial) {
+          // existing oversize vehicle: fetch and reuse its stored dimensions
+          float storedH = 0.0f, storedL = 0.0f;
+          if (!VehicleIO::getVehicleDimensions(vehicleLicense, storedH, storedL)) {
+              // fallback defaults if something went wrong
+              storedH =  2.0f;
+              storedL =  7.0f;
+          }
+          success = Reservation::createSpecialReservation(
+              sailingID,
+              vehicleLicense,
+              occupants,
+              "",        // phone unused for repeat
+              storedH,   // now comes from disk
+              storedL
+          );
+      }
+      else {
+          // an existing regular vehicle
+          success = Reservation::createReservation(
+              sailingID,
+              vehicleLicense,
+              occupants,
+              ""   // phone unused for repeat
+          );
+      }
+
+      std::cout << (success
+                    ? "Reservation successfully created.\n"
+                    : "Reservation creation failed.\n");
+    return;
+}
+ else if (choice == 2) {
             // -- Cancel_reservation logic (unchanged) --
             string vehicleLicense;
             do {

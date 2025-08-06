@@ -37,9 +37,9 @@ public:
     // Checks if license is valid for reservations. Returns true if valid.
     // Precondition:
     // License must exist in system
-    static bool checkLicenseForReservation(
-        const std::string& license  // [in] Vehicle license to check
-    );
+    // static bool checkLicenseForReservation(
+    //     const std::string& license  // [in] Vehicle license to check
+    // );
 
     //------
     // Description:
@@ -68,5 +68,4 @@ private:
     static std::string currentPhoneNumber;   // Currently processed owner phone
     static float currentHeight;              // Currently processed vehicle height (0 for regular)
     static float currentLength;              // Currently processed vehicle length (0 for regular)
-    static bool isSpecialVehicle;            // Flag indicating special vehicle status
 };

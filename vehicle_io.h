@@ -46,6 +46,15 @@ public:
         const std::string& license  // [in] Vehicle license to check
     );
 
+    // returns true if this license exists *and* was stored as a special vehicle
+    static bool checkVehicleIsSpecial(const std::string& license);
+
+    // Returns true and fills height/length if the vehicle exists.
+    static bool getVehicleDimensions(const std::string& license,
+                                 float& outHeight,
+                                 float& outLength);
+
+
     //------
     // Description:
     // Creates a new special vehicle record. Returns true if successful.

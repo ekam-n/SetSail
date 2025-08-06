@@ -11,14 +11,13 @@
 //*******************************
 
 #include "vehicle.h"
+#include "vehicle_io.h"
 #include <string>
 
-// Define all static members
 std::string Vehicle::currentLicensePlate;
 std::string Vehicle::currentPhoneNumber;
-float Vehicle::currentHeight = 0.0f;
-float Vehicle::currentLength = 0.0f;
-bool Vehicle::isSpecialVehicle = false;
+float       Vehicle::currentHeight       = 0.0f;
+float       Vehicle::currentLength       = 0.0f;
 
 //------
 // Description:
@@ -26,13 +25,18 @@ bool Vehicle::isSpecialVehicle = false;
 // Precondition:
 // None
 bool Vehicle::init() {
+    // open the vehicles file so checkVehicleExists will work
+    if (!VehicleIO::open()) {
+        // std::cerr << "Error: Unable to open vehicles data file\n";
+        return false;
+    }
     currentLicensePlate = "";
     currentPhoneNumber = "";
     currentHeight = 0.0f;
     currentLength = 0.0f;
-    isSpecialVehicle = false;
     return true;
 }
+
 
 //------
 // Description:
@@ -40,8 +44,9 @@ bool Vehicle::init() {
 // Precondition:
 // Class must be initialized
 void Vehicle::shutdown() {
-    // Currently no resources to clean up
+    VehicleIO::close();
 }
+
 
 //------
 // Description:
@@ -50,9 +55,9 @@ void Vehicle::shutdown() {
 // Currently just checks if license string is not empty (placeholder)
 // Precondition:
 // License must exist in system
-bool Vehicle::checkLicenseForReservation(const std::string& license) {
-    return !license.empty(); // Simple placeholder validation
-}
+// bool Vehicle::checkLicenseForReservation(const std::string& license) {
+//     return !license.empty(); // Simple placeholder validation
+// }
 
 //------
 // Description:
@@ -65,12 +70,12 @@ bool Vehicle::createVehicleForReservation(
     const std::string& licensePlate,
     const std::string& phoneNumber
 ) {
-    currentLicensePlate = licensePlate;
-    currentPhoneNumber = phoneNumber;
-    currentHeight = 0.0f;
-    currentLength = 0.0f;
-    isSpecialVehicle = false;
-    return true;
+    Vehicle veh;
+    veh.currentLicensePlate = licensePlate;
+    veh.currentPhoneNumber = phoneNumber;
+    veh.currentHeight = 0.0f;
+    veh.currentLength = 0.0f;
+    return VehicleIO::createVehicle(veh);
 }
 
 //------
@@ -86,10 +91,10 @@ bool Vehicle::createSpecialVehicleForReservation(
     float height,
     float length
 ) {
-    currentLicensePlate = licensePlate;
-    currentPhoneNumber = phoneNumber;
-    currentHeight = height;
-    currentLength = length;
-    isSpecialVehicle = true;
-    return true;
+    Vehicle veh;
+    veh.currentLicensePlate = licensePlate;
+    veh.currentPhoneNumber = phoneNumber;
+    veh.currentHeight = height;
+    veh.currentLength = length;
+    return VehicleIO::createSpecialVehicle(veh);
 }

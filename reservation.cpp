@@ -109,6 +109,11 @@ bool Reservation::createReservation(
         return false;
     }
 
+    // 2a) If this vehicle has never been seen, register it
+    if (!VehicleIO::checkVehicleExists(vehicleLicense)) {
+        Vehicle::createVehicleForReservation(vehicleLicense, phoneNumber);
+    }
+
     // 2) Must have vehicle capacity (any free lane)
     if (!Sailing::checkSailingVehicleCapacity(sailingID)) {
         std::cout << "Sailing does not have vehicle capacity.\n";
